@@ -55,13 +55,51 @@
   }
   .table-header, .payment-row {
     display: grid;
-    grid-template-columns: 30px 2fr 1.2fr 1.2fr 1.2fr;
-    gap: 8px;
+    grid-template-columns: 30px 1.5fr 1fr 1fr 1.7fr;
+    gap: 4px;
     padding: 10px 0;
     align-items: center;
   }
 }
 
+@media (max-width: 700px) {
+  #contractForm {
+    max-width: 90vw;
+    width: 90vw;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 12px;
+    padding-bottom: 18px;
+  }
+  #contractContent {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  #contractForm .contract-row {
+    gap: 2px;
+    margin-bottom: 0;
+  }
+  #contractForm label.label-text {
+    font-size: 12px;
+    margin-bottom: 0;
+    min-width: 54px;
+    padding-right: 2px;
+  }
+  #contractForm .input-contract-number {
+    width: 32px;
+    min-width: 32px;
+    max-width: 40px;
+    font-size: 13px;
+    padding: 7px 6px;
+  }
+  #contractForm .input-contract-date {
+    width: 70px;
+    min-width: 70px;
+    max-width: 90px;
+    font-size: 13px;
+    padding: 7px 6px;
+  }
+}
 
 
 body {
