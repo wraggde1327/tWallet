@@ -583,7 +583,8 @@ body {
 
 /* --- Форма договора --- */
 #contractContent {
-  margin-top: 18px;
+  padding-left: 18px;
+  padding-right: 18px;
 }
 #contractContent h2 {
   font-size: 22px;
@@ -591,6 +592,8 @@ body {
   margin-bottom: 18px;
   color: #222;
   text-align: center;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 #contractForm {
   display: flex;
@@ -602,6 +605,8 @@ body {
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  padding-left: 28px;
+  padding-right: 28px;
 }
 #contractForm label.form-label {
   margin-bottom: 2px;
@@ -643,6 +648,16 @@ body {
   /* убираем индивидуальные min/max-width, если не нужны */
   min-width: 0;
   max-width: none;
+}
+#contractForm .input-contract-number {
+  width: 45px;
+  min-width: 45px;
+  max-width: 45px;
+}
+#contractForm .input-contract-date {
+  width: 90px;
+  min-width: 90px;
+  max-width: 90px;
 }
 #contractForm .button-group {
   display: flex;

@@ -721,11 +721,11 @@ document.getElementById('invoiceTab').addEventListener('click', () => {
   }
 });
 
-// Выпадающий список клиентов по клику (focus) — всегда показывать
+// --- показываем всех клиентов при фокусе ---
 clientSearchInput.addEventListener('focus', function() {
   clientDropdown.innerHTML = '';
   if (!clientsList.length) return;
-  clientsList.slice(0, 8).forEach(client => {
+  clientsList.forEach(client => {
     const div = document.createElement('div');
     div.className = 'autocomplete-item';
     div.textContent = client.name;
@@ -738,7 +738,7 @@ clientSearchInput.addEventListener('focus', function() {
   });
 });
 
-// Автозаполнение клиентов по вводу
+// --- показываем всех подходящих клиентов при вводе ---
 clientSearchInput.addEventListener('input', function() {
   const query = this.value.trim().toLowerCase();
   clientDropdown.innerHTML = '';
@@ -747,7 +747,7 @@ clientSearchInput.addEventListener('input', function() {
   if (query) {
     matches = clientsList.filter(c => c.name.toLowerCase().includes(query));
   }
-  matches.slice(0, 8).forEach(client => {
+  matches.forEach(client => {
     const div = document.createElement('div');
     div.className = 'autocomplete-item';
     div.textContent = client.name;
