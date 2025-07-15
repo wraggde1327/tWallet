@@ -794,19 +794,19 @@ invoiceForm.addEventListener('submit', function(e) {
   const sum = parseFloat(amountInput.value);
   const type = paymentTypeInput.value;
   if (!clientId) {
-    showNotification('Выберите клиента из списка!', 'error', 4000);
+    showNotification('Выберите клиента из списка!', 'error', 2000);
     return;
   }
   if (!sum || sum <= 0) {
-    showNotification('Введите корректную сумму!', 'error', 4000);
+    showNotification('Введите сумму', 'error', 2000);
     return;
   }
   if (!type) {
-    showNotification('Выберите тип!', 'error', 4000);
+    showNotification('Выберите тип!', 'error', 2000);
     return;
   }
   if (!tgUserId) {
-    showNotification('Пользователь не определён!', 'error', 4000);
+    showNotification('Пользователь не определён!', 'error', 2000);
     return;
   }
   const payload = {
@@ -815,28 +815,33 @@ invoiceForm.addEventListener('submit', function(e) {
     type: type,
     who: tgUserId
   };
-  showModalLoading('Создание счета...');
-  fetch('https://24sdmahom.ru/invoices', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-    .then(res => res.json())
-    .then(data => {
-      hideModalLoading();
-      if (data && data.message) {
-        showNotification('Счет успешно создан!', 'info', 3000);
-        invoiceForm.reset();
-        clientSearchInput.dataset.clientId = '';
-        paymentTypeBtns.forEach(b => b.classList.remove('active', 'blue', 'green', 'yellow'));
-        paymentTypeBtns[0].classList.add('active', 'blue');
-        paymentTypeInput.value = paymentTypeBtns[0].dataset.type;
-      } else {
-        showNotification('Ошибка создания счета', 'error', 4000);
-      }
+  showNotification('Счет отправляем...', 'status', 1800);
+  setTimeout(() => {
+    showModalLoading('Создание счета...');
+    fetch('https://24sdmahom.ru/invoices', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
     })
-    .catch(err => {
-      hideModalLoading();
-      showNotification('Ошибка при создании счета', 'error', 4000);
-    });
+      .then(res => res.json())
+      .then(data => {
+        hideModalLoading();
+        if (data && data.message) {
+          showNotification(data.message, 'info', 3000);
+          invoiceForm.reset();
+          clientSearchInput.dataset.clientId = '';
+          paymentTypeBtns.forEach(b => b.classList.remove('active', 'blue', 'green', 'yellow'));
+          paymentTypeBtns[0].classList.add('active', 'blue');
+          paymentTypeInput.value = paymentTypeBtns[0].dataset.type;
+        } else if (data && data.error) {
+          showNotification(data.error, 'error', 4000);
+        } else {
+          showNotification('Ошибка создания счета', 'error', 3000);
+        }
+      })
+      .catch(err => {
+        hideModalLoading();
+        showNotification('Ошибка при создании счета', 'error', 3000);
+      });
+  }, 600);
 });
