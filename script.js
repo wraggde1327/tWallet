@@ -353,8 +353,7 @@ function renderPayments() {
       <div role="cell">${row["Название"] ?? "—"}</div>
       <div role="cell">${row["Тип"] ?? "—"}</div>
       <div role="cell">${formattedDate}</div>
-      <div role="cell">${row["Сумма"] ?? "—"}</div>
-      <div role="cell" class="${statusClass}">${row["Статус"] ?? "—"}</div>
+      <div role="cell" class="status-cell ${statusClass}">${row["Статус"] ?? "—"}</div>
     `;
 
     div.addEventListener("click", () => openDialog(row));
