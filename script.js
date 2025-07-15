@@ -25,7 +25,7 @@ let tgUserId = null; // username
 let tgUserObj = null;
 
 // Список разрешённых пользователей
-const allowedUsers = ['nick_xnm', 'jekminaev', 'boss'];
+const allowedUsers = ['nick_xnm', 'jekminaev', 'boss', 'Artem_Kostenko_75'];
 
 const tg = window.Telegram?.WebApp;
 
