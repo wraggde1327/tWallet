@@ -409,80 +409,108 @@ body {
   display: none;
 }
 
+/* --- Кнопки вкладок --- */
 .tabs {
   display: flex;
   gap: 0;
-  margin-bottom: 24px;
+  margin-bottom: 18px;
   background: none;
-  border-radius: 12px;
-  overflow: hidden;
+  border-radius: 0;
+  overflow: visible;
   justify-content: center;
 }
 .tab-button {
   flex: 1 1 0;
-  min-width: 110px;
-  background: #23242a;
+  min-width: 70px;
+  background: none;
   color: #bfc9d1;
   border: none;
   outline: none;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
-  padding: 14px 0 12px 0;
+  padding: 8px 0 6px 0;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: color 0.2s;
   border-bottom: 2.5px solid transparent;
   border-radius: 0;
   letter-spacing: 0.01em;
+  margin: 0 8px;
 }
 .tab-button.active {
-  background: #181a20;
   color: #4a90e2;
   border-bottom: 2.5px solid #4a90e2;
   font-weight: 700;
+  background: none;
 }
 .tab-button:not(.active):hover {
-  background: #23242a;
-  color: #fff;
+  color: #4a90e2;
+  background: none;
 }
 
-.autocomplete-item {
-  padding: 8px 12px;
-  background: #23242a;
-  color: #fff;
-  cursor: pointer;
-  border-bottom: 1px solid #222;
-  transition: background 0.18s;
+/* --- Форма счета --- */
+.invoice-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 18px;
+}
+.invoice-form .form-group {
+  margin-bottom: 0;
+}
+.autocomplete {
+  position: relative;
+  width: 100%;
+}
+#clientSearchInput {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #ccc;
   font-size: 15px;
-}
-.autocomplete-item:last-child {
-  border-bottom: none;
-}
-.autocomplete-item:hover {
-  background: #4a90e2;
-  color: #fff;
+  margin-bottom: 0;
+  background: #fff;
+  color: #222;
+  box-sizing: border-box;
 }
 .autocomplete-dropdown {
   position: absolute;
   left: 0;
   right: 0;
   z-index: 10;
-  background: #181a20;
+  background: #fff;
   border-radius: 0 0 10px 10px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
   max-height: 220px;
   overflow-y: auto;
   margin-top: 2px;
+  border: 1px solid #e0e0e0;
+}
+.autocomplete-item {
+  padding: 10px 14px;
+  background: #fff;
+  color: #222;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.18s;
+  font-size: 15px;
+}
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+.autocomplete-item:hover, .autocomplete-item.active {
+  background: #eaf6ff;
+  color: #4a90e2;
 }
 .payment-type-group {
   display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 10px;
+  margin-bottom: 0;
 }
 .payment-type-btn {
   flex: 1 1 0;
-  min-width: 90px;
-  background: #23242a;
-  color: #bfc9d1;
+  min-width: 80px;
+  background: #f3f3f3;
+  color: #888;
   border: none;
   outline: none;
   font-size: 15px;
@@ -490,17 +518,69 @@ body {
   padding: 10px 0 9px 0;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
-  border-bottom: 2px solid transparent;
-  border-radius: 8px;
+  border-radius: 10px;
   letter-spacing: 0.01em;
+  margin: 0;
 }
 .payment-type-btn.active {
-  background: #181a20;
-  color: #4a90e2;
-  border-bottom: 2px solid #4a90e2;
+  color: #fff;
   font-weight: 700;
 }
-.payment-type-btn:not(.active):hover {
-  background: #23242a;
+.payment-type-btn.blue.active {
+  background: #4a90e2;
+}
+.payment-type-btn.green {
+  background: #eafaf1;
+  color: #3bb77e;
+}
+.payment-type-btn.green.active {
+  background: #3bb77e;
   color: #fff;
+}
+.payment-type-btn.yellow {
+  background: #fffbe6;
+  color: #f7bb04;
+}
+.payment-type-btn.yellow.active {
+  background: #f7bb04;
+  color: #fff;
+}
+.submit-btn {
+  width: 100%;
+  padding: 12px 0;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  font-size: 16px;
+  background: linear-gradient(90deg, #4a90e2 0%, #357abd 100%);
+  color: white;
+  cursor: pointer;
+  margin-top: 8px;
+  margin-bottom: 0;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(74,144,226,0.10);
+}
+.submit-btn:hover {
+  background: linear-gradient(90deg, #357abd 0%, #4a90e2 100%);
+}
+.invoice-form input[type="number"] {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #ccc;
+  font-size: 15px;
+  background: #fff;
+  color: #222;
+  box-sizing: border-box;
+}
+.invoice-form label {
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+#clientsLoadIndicator {
+  margin-left: 10px;
+  font-size: 18px;
+  vertical-align: middle;
 }
