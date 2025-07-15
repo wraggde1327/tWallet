@@ -848,14 +848,74 @@ invoiceForm.addEventListener('submit', function(e) {
 
 // --- Логика для вкладки 'Договора' ---
 const contractForm = document.getElementById('contractForm');
+const contractNumberInput = document.getElementById('contractNumber');
+const contractDateInput = document.getElementById('contractDate');
+const orgTypeInput = document.getElementById('orgType');
+const tarifInput = document.getElementById('tarif');
+const orgButtons = document.querySelectorAll('.button-org');
+const tarifButtons = document.querySelectorAll('.button-tarif');
+
+function getDefaultContractNumber() {
+  // Пример: 1507/24 (15 — день, 07 — месяц, 24 — год)
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear().toString().slice(-2);
+  return `${day}${month}/${year}`;
+}
+function getTodayDate() {
+  const now = new Date();
+  return now.toISOString().slice(0, 10);
+}
+
+// При открытии вкладки 'Договора' подставлять значения
+const contractTab = document.getElementById('contractTab');
+if (contractTab) {
+  contractTab.addEventListener('click', () => {
+    if (contractNumberInput) contractNumberInput.value = getDefaultContractNumber();
+    if (contractDateInput) contractDateInput.value = getTodayDate();
+    // Активировать первую кнопку типа организации и тарифа
+    if (orgButtons.length) {
+      orgButtons.forEach(b => b.classList.remove('active'));
+      orgButtons[0].classList.add('active');
+      if (orgTypeInput) orgTypeInput.value = orgButtons[0].dataset.value;
+    }
+    if (tarifButtons.length) {
+      tarifButtons.forEach(b => b.classList.remove('active'));
+      tarifButtons[0].classList.add('active');
+      if (tarifInput) tarifInput.value = tarifButtons[0].dataset.value;
+    }
+  });
+}
+// Переключение кнопок ИП/ООО
+if (orgButtons.length) {
+  orgButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      orgButtons.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      if (orgTypeInput) orgTypeInput.value = this.dataset.value;
+    });
+  });
+}
+// Переключение кнопок Стандарт/Промо
+if (tarifButtons.length) {
+  tarifButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      tarifButtons.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      if (tarifInput) tarifInput.value = this.dataset.value;
+    });
+  });
+}
+
 if (contractForm) {
   contractForm.addEventListener('submit', function(e) {
     e.preventDefault();
     // Сбор данных
     const payload = {
-      contractNumber: document.getElementById('contractNumber').value.trim(),
-      contractDate: document.getElementById('contractDate').value.trim(),
-      orgType: document.getElementById('orgType').value.trim(),
+      contractNumber: contractNumberInput.value.trim(),
+      contractDate: contractDateInput.value.trim(),
+      orgType: orgTypeInput.value.trim(),
       zakazchik: document.getElementById('zakazchik').value.trim(),
       inn: document.getElementById('inn').value.trim(),
       ogrn: document.getElementById('ogrn').value.trim(),
@@ -869,7 +929,7 @@ if (contractForm) {
       bik: document.getElementById('bik').value.trim(),
       rs: document.getElementById('rs').value.trim(),
       ks: document.getElementById('ks').value.trim(),
-      tarif: document.getElementById('tarif').value.trim(),
+      tarif: tarifInput.value.trim(),
       who: tgUserId
     };
     // Валидация обязательных полей
@@ -896,6 +956,19 @@ if (contractForm) {
           if (data && data.message) {
             showNotification(data.message, 'info', 3000);
             contractForm.reset();
+            // После сброса — снова подставить номер и дату, активировать кнопки
+            if (contractNumberInput) contractNumberInput.value = getDefaultContractNumber();
+            if (contractDateInput) contractDateInput.value = getTodayDate();
+            if (orgButtons.length) {
+              orgButtons.forEach(b => b.classList.remove('active'));
+              orgButtons[0].classList.add('active');
+              if (orgTypeInput) orgTypeInput.value = orgButtons[0].dataset.value;
+            }
+            if (tarifButtons.length) {
+              tarifButtons.forEach(b => b.classList.remove('active'));
+              tarifButtons[0].classList.add('active');
+              if (tarifInput) tarifInput.value = tarifButtons[0].dataset.value;
+            }
           } else if (data && data.error) {
             showNotification(data.error, 'error', 4000);
           } else {

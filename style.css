@@ -601,10 +601,10 @@ body {
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  padding: 28px 22px 22px 22px;
+  padding: 20px 14px 14px 14px;
 }
 #contractForm label.form-label {
-  margin-bottom: 7px;
+  margin-bottom: 4px;
   font-size: 14px;
   color: #666;
   font-weight: 500;
@@ -626,7 +626,7 @@ body {
 }
 #contractForm .contract-row {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   align-items: center;
   margin-bottom: 0;
 }
@@ -638,7 +638,7 @@ body {
 }
 #contractForm .button-group {
   display: flex;
-  gap: 18px;
+  gap: 10px;
   margin-bottom: 0;
 }
 #contractForm .button-org, #contractForm .button-tarif {
