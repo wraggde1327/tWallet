@@ -549,6 +549,7 @@ function confirmPayment() {
               return sendPaymentData(formData, true, true);
             }
             
+            showNotification(`Ошибка сервера: ${response.status} ${response.statusText}. ${errorText}`, "error", 5000);
             throw new Error(`Ошибка сервера: ${response.status} ${response.statusText}. ${errorText}`);
           });
         }
@@ -556,15 +557,18 @@ function confirmPayment() {
       })
       .then(data => {
         console.log("Успешный ответ:", data);
-        showNotification(`Платёж "${paymentName}" на сумму ${amountToSend} успешно проведён.`, "info", 3000);
-
+        if (data && data.message) {
+          showNotification(data.message, "info", 3000);
+        } else if (data && data.error) {
+          showNotification(data.error, "error", 4000);
+        } else {
+          showNotification(`Платёж \"${paymentName}\" на сумму ${amountToSend} успешно проведён.`, "info", 3000);
+        }
         if (isEditing) {
           const idx = paymentsData.findIndex(p => p["№"] === invoiceId);
           if (idx !== -1) paymentsData[idx]["Сумма"] = amountToSend;
         }
-
         paymentsData = paymentsData.filter(p => p["№"] !== invoiceId);
-
         filterPayments();
       })
       .catch(error => {
