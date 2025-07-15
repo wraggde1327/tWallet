@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Платежи</title>
+  <link rel="stylesheet" href="style.css" />
+ 
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- Вкладки -->
+    <div class="tabs">
+  <button id="paymentsTab" class="tab-button active">Платежи</button>
+  <button id="invoiceTab" class="tab-button">Счета</button>
+  <button id="contractTab" class="tab-button">Договора</button>
+</div>
+
+    <!-- Вкладка Платежи -->
+    <div id="paymentsContent" class="tab-content">
+      <div class="header">
+        <div class="header-left">
+          <h2>Платежи</h2>
+          <span class="badge" id="paymentsCountBadge">0</span>
+        </div>
+        <button class="refresh-btn" onclick="fetchPayments()" aria-label="Обновить данные">⟳</button>
+      </div>
+      <div class="search-block">
+        <input type="text" id="searchInput" placeholder="Поиск по названию..." />
+        <button id="clearSearchBtn" title="Сбросить поиск">✕</button>
+      </div>
+      <div class="info-block">
+        <div class="sum" id="totalSum">Общая сумма: 0</div>
+        <div class="updated" id="updatedAt">Обновлено: —</div>
+      </div>
+      <div class="table-header" role="rowgroup">
+        <div role="columnheader">#</div>
+        <div role="columnheader">Имя</div>
+        <div role="columnheader">Тип</div>
+        <div role="columnheader">Дата</div>
+        <div role="columnheader">Сумма</div>
+        <div role="columnheader">Статус</div>
+      </div>
+      <div id="paymentsList" role="rowgroup"></div>
+    </div>
+
+    <!-- Вкладка Счет -->
+   <div id="invoiceContent" class="tab-content invoice-tab" style="display: none;">
+  <div class="header-left">
+  <h2>
+    Создать счет
+    <span id="clientsLoadIndicator" title="Статус загрузки клиентов"></span>
+  </h2>
+</div>
+
+  <form id="invoiceForm" class="invoice-form">
+    <div class="form-group">
+  <label for="clientSearchInput" class="form-label">Клиент</label>
+  <div class="autocomplete">
+    <input type="text" id="clientSearchInput" class="form-control" autocomplete="off" placeholder="Начните вводить имя клиента...">
+    <div id="clientDropdown" class="autocomplete-dropdown"></div>
+  </div>
+</div>
+    <div class="form-group">
+      <div class="payment-type-group">
+        <button type="button" class="payment-type-btn blue active" data-type="Счет">Счет</button>
+        <button type="button" class="payment-type-btn green" data-type="Наличные">Наличные</button>
+        <button type="button" class="payment-type-btn yellow" data-type="Пополнить">Пополнить</button>
+      </div>
+      <input type="hidden" name="paymentType" id="paymentTypeInput" value="Счет">
+    </div>
+    <div class="form-group">
+      <input type="number" id="amountInput" class="form-control" placeholder="Сумма">
+    </div>
+    <button type="submit" class="submit-btn">Создать</button>
+  </form>
+</div>
+
+
+    <!-- Здесь разместим форму договора -->
+    
+<div id="contractContent" class="tab-content" style="display:none;">
+    <h2>Создать договор</h2>
+  <form id="contractForm" novalidate>
+    <!-- Поля договора (по примеру из contract.html) -->
+    
+     <div class="contract-row">
+  <label for="contractNumber" class="label-text">Договор №</label>
+  <input type="text" id="contractNumber" class="input-field input-contract-number" />
+
+  <label for="contractDate" class="label-text date-label">от</label>
+  <input type="date" id="contractDate" class="input-field input-contract-date" />
+</div>
+
+
+
+    <div class="form-label" style="margin-bottom: 20px;">Тип организации</div>
+      <div class="button-group">
+  <button type="button" class="button-org active" data-value="ИП">ИП</button>
+  <button type="button" class="button-org" data-value="ООО">ООО</button>
+</div>
+
+        <input type="hidden" id="orgType" value="ИП" />
+
+    <!-- Остальные поля, как в контракте -->
+    <label class="form-label" for="zakazchik">Заказчик</label>
+    <input type="text" id="zakazchik" class="form-control" required />
+
+    <label class="form-label" for="inn">ИНН</label>
+    <input type="number" id="inn" class="form-control" required />
+
+    <label class="form-label" for="ogrn">ОГРН</label>
+    <input type="number" id="ogrn" class="form-control" required />
+
+    <label class="form-label" for="lico">В лице</label>
+    <input type="text" id="lico" class="form-control" placeholder="ген директора ФИО или ИП" required />
+
+    <label class="form-label" for="osnovan">На основании</label>
+    <input type="text" id="osnovan" class="form-control" placeholder="Устава, Доверенности, Свидетельства" required />
+
+    <label class="form-label" for="rucl">Руководитель</label>
+    <input type="text" id="rucl" class="form-control" placeholder="Ливенцева О.С." required />
+
+    <label class="form-label" for="adress">Адрес</label>
+    <input type="text" id="adress" class="form-control" required />
+
+    <label class="form-label" for="tel">Телефон (не обязательно)</label>
+    <input type="tel" id="tel" class="form-control" />
+
+    <label class="form-label" for="pochta">Почта</label>
+    <input type="email" id="pochta" class="form-control" required />
+
+    <label class="form-label" for="bank">Банк</label>
+    <input type="text" id="bank" class="form-control" required />
+
+    <label class="form-label" for="bik">БИК</label>
+    <input type="text" id="bik" class="form-control" required />
+
+    <label class="form-label" for="rs">Расчетный счет</label>
+    <input type="text" id="rs" class="form-control" required />
+
+    <label class="form-label" for="ks">Корр. счет (не обязательно)</label>
+    <input type="text" id="ks" class="form-control" />
+
+    <div class="button-group">
+      <button type="button" class="button-tarif active" data-value="Стандарт">Стандарт</button>
+      <button type="button" class="button-tarif" data-value="Промо">Промо</button>
+    </div>
+      <input type="hidden" id="tarif" value="Стандарт" />
+
+    <button type="submit" class="submit-btn">Создать договор</button>
+  </form>
+</div>
+
+  <!-- Диалог и уведомления -->
+  <div id="dialog" role="dialog" aria-modal="true" aria-labelledby="dialogText">
+    <div id="dialogText"></div>
+    <div id="dialog-buttons">
+      <button type="button" aria-label="Подтвердить платеж">Да</button>
+      <button type="button" aria-label="Изменить платеж">Изменить</button>
+      <button type="button" aria-label="Отмена">Нет</button>
+    </div>
+  </div>
+  <div id="dialog-overlay"></div>
+  <div id="notification-overlay"></div>
+  <div id="notification"></div>
+
+  <!-- Скрипты -->
+  <script src="script.js"></script>
+  <script src="invoice.js"></script>
+  <script src="contract.js"></script>
+  
+</body>
+</html>

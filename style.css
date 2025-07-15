@@ -1,0 +1,586 @@
+/* Мобильная адаптация (до 600px) */
+@media (max-width: 1000px) {
+  .container {
+    background: #dddddd !important;
+  }
+  .payment-row {
+    display: flex;
+    flex-direction: column;
+    font-size: 12px !important;
+ /*   background: #e0f7fa !important;*/
+  }
+  .payment-row > div {
+    font-size: 10px !important;
+    line-height: 1.2;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+   /* background: #c8e6c9 !important;*/
+  }
+  .dialog-edit-input {
+    width: 95vw;           /* почти вся ширина экрана */
+    max-width: 98vw;       /* не вылезает за экран */
+    min-width: 0;
+    font-size: 15px;
+    padding: 10px 14px;
+    margin: 12px auto 0 auto; /* сверху — 12px, по бокам и снизу — auto */
+    display: block;
+    border-radius: 8px;
+    border: 1.5px solid #ccc;
+    box-sizing: border-box;
+  }
+  #dialog {
+    min-width: 0;
+    width: 98vw;
+    max-width: 99vw;
+    box-sizing: border-box;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  /* Скрываем столбец 'Тип' и его данные */
+  .table-header > div:nth-child(3),
+  .payment-row > div:nth-child(3) {
+    display: none !important;
+  }
+}
+
+
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  background: #f0f2f5;
+  color: #333;
+}
+
+.container {
+  max-width: 720px;
+  margin: 20px auto;
+  background: #dddddd;
+  border-radius: 16px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  padding: 24px 32px;
+  box-sizing: border-box;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  user-select: none;
+}
+.header-left h1 {
+  font-weight: 600;
+  font-size: 28px;
+  margin: 0;
+}
+.badge {
+  background: #e94b4b;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 6px rgba(233,75,75,0.8);
+  user-select: none;
+}
+.refresh-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #4a90e2;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(74,144,226,0.4);
+  transition: background-color 0.3s ease;
+  user-select: none;
+}
+.refresh-btn:hover {
+  background-color: #357abd;
+  box-shadow: 0 6px 12px rgba(53,122,189,0.6);
+}
+.info-block {
+  background: #f9fbfd;
+  border-radius: 16px;
+  padding: 16px 24px;
+  margin-bottom: 24px;
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.05);
+  user-select: none;
+}
+.sum {
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 6px;
+}
+.updated {
+  font-weight: 400;
+  font-size: 13px;
+  color: #666;
+}
+.table-header, .payment-row {
+  display: grid;
+  grid-template-columns: 40px 1.5fr 1fr 1fr 1fr 1fr;
+  gap: 12px;
+  padding: 12px 0;
+  align-items: center;
+  user-select: none;
+}
+.table-header {
+  color: #7a7a7a;
+  font-size: 13px;
+  font-weight: 600;
+  border-bottom: 2px solid #cfd8dc;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.payment-row {
+  background: #fafafa;
+  border-radius: 12px;
+  margin-bottom: 3px;
+  /*display: flex;*/
+ /* align-items: center;*/
+ /* gap: 16px;           /* Отступ между ячейками */
+  padding: 10px 5px;   /* Внутренние отступы слева и справа */
+  min-height: 30px;    /* Минимальная высота строки */
+  border-bottom: 1px solid #eee; /* Разделитель строк (по желанию) */
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.payment-row:hover {
+  background-color: #e8f0fe;
+  box-shadow: 0 4px 8px rgba(74,144,226,0.15);
+}
+.payment-row > div {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 15px;
+  color: #222;
+}
+.status {
+  font-weight: 450;
+  text-transform: capitalize;
+  color: #4a90e2;
+  padding: 5px;
+  display: flex;
+  border-radius: 15px;
+/*  display: inline-block;*/
+  user-select: none;
+  width: max-content;
+}
+
+.await {
+  background-color: #f7bb04;
+  color: #ffffff;
+  font-weight: 450;
+  }
+
+#dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 28px 32px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  border-radius: 20px;
+  display: none;
+  z-index: 1000;
+  max-width: 320px;
+  text-align: center;
+  font-size: 16px;
+  user-select: none;
+}
+
+.dialog-edit-input {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 16px;
+  margin-top: 12px;
+  border-radius: 8px;
+  border: 1.5px solid #ccc;
+  box-sizing: border-box;
+}
+
+#dialog-buttons {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+#dialog-buttons button {
+  padding: 8px 18px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s ease;
+}
+
+/* Левая кнопка (первый ребёнок) — синяя */
+#dialog-buttons button:first-child {
+  background: #4a90e2;
+  color: white;
+}
+#dialog-buttons button:first-child:hover {
+  background: #357abd;
+  color: white;
+}
+
+/* Средняя кнопка (второй ребёнок) — оранжевая */
+#dialog-buttons button:nth-child(2) {
+  background: #f39c12;
+  color: white;
+}
+#dialog-buttons button:nth-child(2):hover {
+  background: #d87e0a;
+  color: white;
+}
+
+/* Правая кнопка (последний ребёнок) — серая */
+#dialog-buttons button:last-child {
+  background: #888888;
+  color: white;
+}
+#dialog-buttons button:last-child:hover {
+  background: #e94b4b;
+  color: white;
+}
+
+/* -- Блок поиска --- */
+.search-block {
+  display: flex;
+  align-items: center; /* выравнивание по вертикали */
+  gap: 8px;
+  margin-bottom: 20px;
+}
+#searchInput {
+ flex-grow: 1;
+  padding: 10px 14px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1.5px solid #ccc;
+  outline-offset: 2px;
+}
+#searchInput:focus {
+  border-color: #4a90e2;
+  outline: none;
+}
+#clearSearchBtn {
+  background: #bcbcbc;
+  border: none;
+  color: white;
+  font-size: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  user-select: none;
+}
+
+#clearSearchBtn:hover {
+  background-color: #a0a0a0;
+}
+
+/* Затемнение фона */
+#notification-overlay {
+  position: fixed;
+  z-index: 9998;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.35);
+  display: none;
+}
+
+/* Центрированное уведомление */
+#notification {
+  position: fixed;
+  z-index: 9999;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 260px;
+  max-width: 90vw;
+  padding: 24px 32px;
+  border-radius: 14px;
+  font-size: 17px;
+  color: #fff;
+  background: #4a90e2;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+#notification.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+#notification.error {
+  background: #e94b4b;
+}
+
+.tg-user-info {
+  margin-left: 16px;
+  font-size: 1em;
+  color: #555;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+  align-self: center;
+}
+
+#user-input-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(10, 10, 20, 0.88); /* более тёмный фон */
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#user-input-overlay > div {
+  background: #181a20;
+  color: #fff;
+  padding: 32px 24px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+  text-align: center;
+  min-width: 260px;
+  max-width: 90vw;
+}
+#user-input-overlay input[type="text"] {
+  font-size: 16px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #444;
+  background: #23242a;
+  color: #fff;
+  width: 90%;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+#user-input-overlay button {
+  padding: 10px 24px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  font-size: 15px;
+  background: linear-gradient(90deg, #4a90e2 0%, #357abd 100%);
+  color: white;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(74,144,226,0.10);
+}
+#user-input-overlay button:hover {
+  background: linear-gradient(90deg, #357abd 0%, #4a90e2 100%);
+}
+#user-input-overlay #userInputError {
+  color: #ff6b6b;
+  margin-top: 10px;
+  font-size: 14px;
+  display: none;
+}
+
+/* --- Кнопки вкладок --- */
+.tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 18px;
+  background: none;
+  border-radius: 0;
+  overflow: visible;
+  justify-content: center;
+}
+.tab-button {
+  flex: 1 1 0;
+  min-width: 70px;
+  background: none;
+  color: #bfc9d1;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 8px 0 6px 0;
+  cursor: pointer;
+  transition: color 0.2s;
+  border-bottom: 2.5px solid transparent;
+  border-radius: 0;
+  letter-spacing: 0.01em;
+  margin: 0 8px;
+}
+.tab-button.active {
+  color: #4a90e2;
+  border-bottom: 2.5px solid #4a90e2;
+  font-weight: 700;
+  background: none;
+}
+.tab-button:not(.active):hover {
+  color: #4a90e2;
+  background: none;
+}
+
+/* --- Форма счета --- */
+.invoice-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 18px;
+}
+.invoice-form .form-group {
+  margin-bottom: 0;
+}
+.autocomplete {
+  position: relative;
+  width: 100%;
+}
+#clientSearchInput {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #ccc;
+  font-size: 15px;
+  margin-bottom: 0;
+  background: #fff;
+  color: #222;
+  box-sizing: border-box;
+}
+.autocomplete-dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: #fff;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  max-height: 220px;
+  overflow-y: auto;
+  margin-top: 2px;
+  border: 1px solid #e0e0e0;
+}
+.autocomplete-item {
+  padding: 10px 14px;
+  background: #fff;
+  color: #222;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.18s;
+  font-size: 15px;
+}
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+.autocomplete-item:hover, .autocomplete-item.active {
+  background: #eaf6ff;
+  color: #4a90e2;
+}
+.payment-type-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 0;
+}
+.payment-type-btn {
+  flex: 1 1 0;
+  min-width: 80px;
+  background: #f3f3f3;
+  color: #888;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 10px 0 9px 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  border-radius: 10px;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+.payment-type-btn.active {
+  color: #fff;
+  font-weight: 700;
+}
+.payment-type-btn.blue.active {
+  background: #4a90e2;
+}
+.payment-type-btn.green {
+  background: #eafaf1;
+  color: #3bb77e;
+}
+.payment-type-btn.green.active {
+  background: #3bb77e;
+  color: #fff;
+}
+.payment-type-btn.yellow {
+  background: #fffbe6;
+  color: #f7bb04;
+}
+.payment-type-btn.yellow.active {
+  background: #f7bb04;
+  color: #fff;
+}
+.submit-btn {
+  width: 100%;
+  padding: 12px 0;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  font-size: 16px;
+  background: linear-gradient(90deg, #4a90e2 0%, #357abd 100%);
+  color: white;
+  cursor: pointer;
+  margin-top: 8px;
+  margin-bottom: 0;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(74,144,226,0.10);
+}
+.submit-btn:hover {
+  background: linear-gradient(90deg, #357abd 0%, #4a90e2 100%);
+}
+.invoice-form input[type="number"] {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #ccc;
+  font-size: 15px;
+  background: #fff;
+  color: #222;
+  box-sizing: border-box;
+}
+.invoice-form label {
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+#clientsLoadIndicator {
+  margin-left: 10px;
+  font-size: 18px;
+  vertical-align: middle;
+}
