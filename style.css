@@ -595,16 +595,16 @@ body {
 #contractForm {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 7px;
+  padding: 32px 28px 22px 28px;
   max-width: 480px;
   margin: 0 auto;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  padding: 20px 14px 14px 14px;
 }
 #contractForm label.form-label {
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   font-size: 14px;
   color: #666;
   font-weight: 500;
@@ -626,15 +626,23 @@ body {
 }
 #contractForm .contract-row {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
   margin-bottom: 0;
 }
-#contractForm .input-contract-number {
-  flex: 1 1 0;
-}
+#contractForm .input-contract-number,
 #contractForm .input-contract-date {
-  flex: 1 1 0;
+  font-size: 15px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #ccc;
+  background: #fff;
+  color: #222;
+  box-sizing: border-box;
+  height: 40px;
+  /* убираем индивидуальные min/max-width, если не нужны */
+  min-width: 0;
+  max-width: none;
 }
 #contractForm .button-group {
   display: flex;

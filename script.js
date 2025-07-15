@@ -711,7 +711,7 @@ document.getElementById('invoiceTab').addEventListener('click', () => {
         clientsList = Array.isArray(data) ? data : [];
         clientsLoaded = true;
         setClientsIndicator('loaded');
-        setTimeout(hideModalLoading, 2000);
+        hideModalLoading();
       })
       .catch(err => {
         setClientsIndicator();
@@ -938,6 +938,7 @@ if (contractForm) {
     ];
     for (const key of required) {
       if (!payload[key]) {
+        hideModalLoading(); // <--- добавьте эту строку
         showNotification('Заполните все обязательные поля!', 'error', 2500);
         return;
       }
