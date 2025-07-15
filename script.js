@@ -685,31 +685,46 @@ function hideModalLoading() {
   if (modal) modal.style.display = 'none';
 }
 
-// Получение клиентов при переходе на вкладку 'Счета'
+// Индикатор загрузки клиентов
+function setClientsIndicator(state) {
+  clientsLoadIndicator.classList.remove('loading', 'loaded');
+  if (state === 'loading') {
+    clientsLoadIndicator.classList.add('loading');
+    clientsLoadIndicator.title = 'Загрузка клиентов...';
+  } else if (state === 'loaded') {
+    clientsLoadIndicator.classList.add('loaded');
+    clientsLoadIndicator.title = 'Клиенты загружены';
+  } else {
+    clientsLoadIndicator.title = 'Клиенты не загружены';
+  }
+}
+setClientsIndicator();
+
+// Получение клиентов при переходе на вкладку 'Счета' (только один раз)
 document.getElementById('invoiceTab').addEventListener('click', () => {
   if (!clientsLoaded) {
     showModalLoading('Загрузка клиентов...');
-    clientsLoadIndicator.textContent = '⏳';
+    setClientsIndicator('loading');
     fetch('/clients')
       .then(res => res.json())
       .then(data => {
         clientsList = Array.isArray(data) ? data : [];
         clientsLoaded = true;
-        clientsLoadIndicator.textContent = '✓';
+        setClientsIndicator('loaded');
         hideModalLoading();
       })
       .catch(err => {
-        clientsLoadIndicator.textContent = '⚠️';
+        setClientsIndicator();
         hideModalLoading();
         showNotification('Ошибка загрузки клиентов', 'error', 4000);
       });
   }
 });
 
-// Выпадающий список клиентов по клику
+// Выпадающий список клиентов по клику (focus) — всегда показывать
 clientSearchInput.addEventListener('focus', function() {
-  if (!clientsList.length) return;
   clientDropdown.innerHTML = '';
+  if (!clientsList.length) return;
   clientsList.slice(0, 8).forEach(client => {
     const div = document.createElement('div');
     div.className = 'autocomplete-item';
@@ -727,8 +742,11 @@ clientSearchInput.addEventListener('focus', function() {
 clientSearchInput.addEventListener('input', function() {
   const query = this.value.trim().toLowerCase();
   clientDropdown.innerHTML = '';
-  if (!query || !clientsList.length) return;
-  const matches = clientsList.filter(c => c.name.toLowerCase().includes(query));
+  if (!clientsList.length) return;
+  let matches = clientsList;
+  if (query) {
+    matches = clientsList.filter(c => c.name.toLowerCase().includes(query));
+  }
   matches.slice(0, 8).forEach(client => {
     const div = document.createElement('div');
     div.className = 'autocomplete-item';
@@ -748,14 +766,24 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// Выбор типа платежа
+// Кнопки выбора типа: по умолчанию все серые, при активации — нужный цвет и белый текст
 paymentTypeBtns.forEach(btn => {
+  btn.classList.remove('active', 'blue', 'green', 'yellow');
   btn.addEventListener('click', function() {
-    paymentTypeBtns.forEach(b => b.classList.remove('active'));
+    paymentTypeBtns.forEach(b => b.classList.remove('active', 'blue', 'green', 'yellow'));
     this.classList.add('active');
+    if (this.dataset.type === 'Счет') this.classList.add('blue');
+    if (this.dataset.type === 'Наличные') this.classList.add('green');
+    if (this.dataset.type === 'Пополнить') this.classList.add('yellow');
     paymentTypeInput.value = this.dataset.type;
   });
 });
+// По умолчанию активируем первую кнопку (Счет)
+if (paymentTypeBtns.length) {
+  paymentTypeBtns.forEach(b => b.classList.remove('active', 'blue', 'green', 'yellow'));
+  paymentTypeBtns[0].classList.add('active', 'blue');
+  paymentTypeInput.value = paymentTypeBtns[0].dataset.type;
+}
 
 // Отправка формы счета
 invoiceForm.addEventListener('submit', function(e) {
@@ -800,8 +828,8 @@ invoiceForm.addEventListener('submit', function(e) {
         showNotification('Счет успешно создан!', 'info', 3000);
         invoiceForm.reset();
         clientSearchInput.dataset.clientId = '';
-        paymentTypeBtns.forEach(b => b.classList.remove('active'));
-        paymentTypeBtns[0].classList.add('active');
+        paymentTypeBtns.forEach(b => b.classList.remove('active', 'blue', 'green', 'yellow'));
+        paymentTypeBtns[0].classList.add('active', 'blue');
         paymentTypeInput.value = paymentTypeBtns[0].dataset.type;
       } else {
         showNotification('Ошибка создания счета', 'error', 4000);

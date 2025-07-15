@@ -365,51 +365,18 @@ body {
   align-items: center;
   justify-content: center;
 }
+/* --- Приветственное модальное окно --- */
 #user-input-overlay > div {
-  background: #181a20;
-  color: #fff;
-  padding: 32px 24px;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
-  text-align: center;
-  min-width: 260px;
-  max-width: 90vw;
+  background: #181a20 !important;
+  color: #fff !important;
 }
 #user-input-overlay input[type="text"] {
-  font-size: 16px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1.5px solid #444;
   background: #23242a;
   color: #fff;
-  width: 90%;
-  margin-bottom: 16px;
-  box-sizing: border-box;
-}
-#user-input-overlay button {
-  padding: 10px 24px;
-  border-radius: 10px;
-  border: none;
-  font-weight: 600;
-  font-size: 15px;
-  background: linear-gradient(90deg, #4a90e2 0%, #357abd 100%);
-  color: white;
-  cursor: pointer;
-  margin-top: 8px;
-  transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 8px rgba(74,144,226,0.10);
-}
-#user-input-overlay button:hover {
-  background: linear-gradient(90deg, #357abd 0%, #4a90e2 100%);
-}
-#user-input-overlay #userInputError {
-  color: #ff6b6b;
-  margin-top: 10px;
-  font-size: 14px;
-  display: none;
+  border: 1.5px solid #444;
 }
 
-/* --- Кнопки вкладок --- */
+/* --- Кнопки вкладок (меню) --- */
 .tabs {
   display: flex;
   gap: 0;
@@ -423,7 +390,7 @@ body {
   flex: 1 1 0;
   min-width: 70px;
   background: none;
-  color: #bfc9d1;
+  color: #444;
   border: none;
   outline: none;
   font-size: 15px;
@@ -434,7 +401,7 @@ body {
   border-bottom: 2.5px solid transparent;
   border-radius: 0;
   letter-spacing: 0.01em;
-  margin: 0 8px;
+  margin: 0 2px;
 }
 .tab-button.active {
   color: #4a90e2;
@@ -445,6 +412,62 @@ body {
 .tab-button:not(.active):hover {
   color: #4a90e2;
   background: none;
+}
+
+/* --- Кнопки выбора типа в счетах --- */
+.payment-type-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 0;
+}
+.payment-type-btn {
+  flex: 1 1 0;
+  min-width: 80px;
+  background: #bfc9d1;
+  color: #fff;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 10px 0 9px 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  border-radius: 10px;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+.payment-type-btn.active.blue {
+  background: #4a90e2 !important;
+  color: #fff !important;
+}
+.payment-type-btn.active.green {
+  background: #3bb77e !important;
+  color: #fff !important;
+}
+.payment-type-btn.active.yellow {
+  background: #f7bb04 !important;
+  color: #fff !important;
+}
+
+/* --- Индикатор загрузки клиентов --- */
+#clientsLoadIndicator {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  margin-left: 10px;
+  vertical-align: middle;
+  background: #bfc9d1;
+  box-shadow: 0 0 0 1px #bfc9d1;
+  transition: background 0.2s;
+}
+#clientsLoadIndicator.loading {
+  background: #f7bb04;
+  box-shadow: 0 0 0 1px #f7bb04;
+}
+#clientsLoadIndicator.loaded {
+  background: #3bb77e;
+  box-shadow: 0 0 0 1px #3bb77e;
 }
 
 /* --- Форма счета --- */
@@ -501,50 +524,6 @@ body {
   background: #eaf6ff;
   color: #4a90e2;
 }
-.payment-type-group {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 0;
-}
-.payment-type-btn {
-  flex: 1 1 0;
-  min-width: 80px;
-  background: #f3f3f3;
-  color: #888;
-  border: none;
-  outline: none;
-  font-size: 15px;
-  font-weight: 500;
-  padding: 10px 0 9px 0;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  border-radius: 10px;
-  letter-spacing: 0.01em;
-  margin: 0;
-}
-.payment-type-btn.active {
-  color: #fff;
-  font-weight: 700;
-}
-.payment-type-btn.blue.active {
-  background: #4a90e2;
-}
-.payment-type-btn.green {
-  background: #eafaf1;
-  color: #3bb77e;
-}
-.payment-type-btn.green.active {
-  background: #3bb77e;
-  color: #fff;
-}
-.payment-type-btn.yellow {
-  background: #fffbe6;
-  color: #f7bb04;
-}
-.payment-type-btn.yellow.active {
-  background: #f7bb04;
-  color: #fff;
-}
 .submit-btn {
   width: 100%;
   padding: 12px 0;
@@ -578,9 +557,4 @@ body {
   font-size: 14px;
   color: #666;
   font-weight: 500;
-}
-#clientsLoadIndicator {
-  margin-left: 10px;
-  font-size: 18px;
-  vertical-align: middle;
 }
