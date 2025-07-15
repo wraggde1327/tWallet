@@ -55,10 +55,15 @@
   }
   .table-header, .payment-row {
     display: grid;
-    grid-template-columns: 30px 1.5fr 1fr 1fr 1.7fr;
+    grid-template-columns: 30px 1.5fr 1fr 1fr 1.2fr;
     gap: 4px;
     padding: 10px 0;
     align-items: center;
+  }
+  .payment-row > div:last-child,
+  .table-header > div:last-child {
+    justify-self: end;
+    text-align: right;
   }
 }
 
