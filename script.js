@@ -82,20 +82,29 @@ document.addEventListener('DOMContentLoaded', () => {
 function fetchPayments() {
   updatedAtEl.textContent = "Обновление...";
   fetch("https://24sdmahom.ru/pending")
-    .then(res => res.json())
+    .then(res => {
+      console.log("Статус ответа загрузки:", res.status, res.statusText);
+      if (!res.ok) {
+        throw new Error(`Ошибка загрузки: ${res.status} ${res.statusText}`);
+      }
+      return res.json();
+    })
     .then(data => {
+      console.log("Загруженные данные:", data);
+      console.log("Структура первого элемента:", data.length > 0 ? data[0] : "Нет данных");
+      
       paymentsData = data;
       lastUpdated = new Date();
       filteredPayments = paymentsData;
       renderPayments();
     })
     .catch(err => {
+      console.error("Полная ошибка загрузки:", err);
       paymentsList.innerHTML = "<p style='color:red; padding:12px;'>Ошибка загрузки данных</p>";
       totalSumEl.textContent = "Общая сумма: 0";
       updatedAtEl.textContent = "Обновлено: —";
       paymentsCountBadge.textContent = "0";
       showNotification("Ошибка загрузки данных. Проверьте соединение.", "error", 5000);
-      console.error("Ошибка загрузки данных:", err);
     });
 }
 
@@ -135,6 +144,9 @@ function renderPayments() {
   paymentsList.innerHTML = "";
 
   filteredPayments.forEach((row, idx) => {
+    // Проверяем структуру данных
+    console.log(`Обрабатываем платеж ${idx}:`, row);
+    
     const div = document.createElement("div");
     div.className = "payment-row";
     div.tabIndex = 0;
@@ -159,7 +171,6 @@ function renderPayments() {
     // Формируем класс для статуса
     const statusClass = `status ${row["Статус"]?.toLowerCase().trim() === "ожидает" ? "await" : ""}`;
 
-
     div.innerHTML = `
       <div role="cell">${row["№"] ?? idx + 1}</div>
       <div role="cell">${row["Название"] ?? "—"}</div>
@@ -173,7 +184,10 @@ function renderPayments() {
     paymentsList.appendChild(div);
 
     if (row["Статус"]?.toLowerCase().trim() === "ожидает") {
-      sum += +row["Сумма"];
+      const amount = parseFloat(row["Сумма"]);
+      if (!isNaN(amount)) {
+        sum += amount;
+      }
     }
   });
 
@@ -244,6 +258,13 @@ function confirmPayment() {
   const invoiceId = selectedPayment["№"];
   const paymentName = selectedPayment["Название"];
 
+  // Проверяем корректность данных
+  if (!invoiceId) {
+    showNotification("Ошибка: отсутствует ID платежа", "error", 4500);
+    console.error("Отсутствует ID платежа:", selectedPayment);
+    return;
+  }
+
   if (isEditing) {
     if (!editInput) {
       alert("Ошибка: поле ввода суммы не найдено.");
@@ -259,47 +280,127 @@ function confirmPayment() {
     amountToSend = val;
   }
 
+  // Проверяем, что сумма корректная
+  if (!amountToSend || isNaN(amountToSend) || amountToSend <= 0) {
+    showNotification("Ошибка: некорректная сумма платежа", "error", 4500);
+    console.error("Некорректная сумма:", amountToSend);
+    return;
+  }
+
+  // Убеждаемся, что данные имеют правильные типы
+  const numericInvoiceId = parseInt(invoiceId);
+  const numericAmount = parseFloat(amountToSend);
+
+  if (isNaN(numericInvoiceId)) {
+    showNotification("Ошибка: некорректный ID платежа", "error", 4500);
+    console.error("Некорректный ID:", invoiceId);
+    return;
+  }
+  if (!tgUserId) {
+    showNotification("Ошибка: не определён пользователь Telegram", "error", 4500);
+    console.error("Не определён tgUserId");
+    return;
+  }
+
   // Закрываем диалог после сохранения данных
   closeDialog();
 
   enableButtons(false);
 
   const payload = {
-    invoice_id: invoiceId,
-    amount: amountToSend
+    invoice_id: numericInvoiceId,
+    amount: numericAmount,
+    who: tgUserId
   };
+
+  // Альтернативный вариант payload (на случай, если сервер ожидает другие названия полей)
+  const alternativePayload = {
+    id: numericInvoiceId,
+    sum: numericAmount,
+    who: tgUserId
+  };
+
+  // Третий вариант - FormData (если сервер ожидает multipart/form-data)
+  const formData = new FormData();
+  formData.append('invoice_id', numericInvoiceId);
+  formData.append('amount', numericAmount);
+  formData.append('who', tgUserId);
+
+  // Отладочная информация
+  console.log("Отправляем данные:", payload);
+  console.log("Альтернативный вариант:", alternativePayload);
+  console.log("FormData вариант:", formData);
+  console.log("Исходные данные платежа:", selectedPayment);
+  console.log("Типы данных:", {
+    invoice_id: typeof numericInvoiceId,
+    amount: typeof numericAmount,
+    invoice_id_value: numericInvoiceId,
+    amount_value: numericAmount
+  });
 
   showNotification("Отправка платежа...", "status", 1500);
 
-  fetch("https://24sdmahom.ru/update_invoice", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`Ошибка сервера: ${response.status} ${response.statusText}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      showNotification(`Платёж "${paymentName}" на сумму ${amountToSend} успешно проведён.`, "info", 3000);
+  // Функция для отправки данных с возможностью повтора
+  function sendPaymentData(payloadToSend, isRetry = false, useFormData = false) {
+    const requestOptions = {
+      method: "POST",
+      headers: useFormData ? {} : { 
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: useFormData ? payloadToSend : JSON.stringify(payloadToSend)
+    };
 
-      if (isEditing) {
-        const idx = paymentsData.findIndex(p => p["№"] === invoiceId);
-        if (idx !== -1) paymentsData[idx]["Сумма"] = amountToSend;
-      }
+    fetch("https://24sdmahom.ru/update_invoice", requestOptions)
+      .then(response => {
+        console.log("Ответ сервера:", response.status, response.statusText);
+        
+        if (!response.ok) {
+          // Пытаемся получить детали ошибки
+          return response.text().then(errorText => {
+            console.error("Детали ошибки:", errorText);
+            
+            // Если это первая попытка и ошибка 422, пробуем альтернативный формат
+            if (!isRetry && response.status === 422) {
+              console.log("Пробуем альтернативный формат данных...");
+              return sendPaymentData(alternativePayload, true, false);
+            }
+            
+            // Если вторая попытка тоже не удалась, пробуем FormData
+            if (isRetry && response.status === 422) {
+              console.log("Пробуем FormData формат...");
+              return sendPaymentData(formData, true, true);
+            }
+            
+            throw new Error(`Ошибка сервера: ${response.status} ${response.statusText}. ${errorText}`);
+          });
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Успешный ответ:", data);
+        showNotification(`Платёж "${paymentName}" на сумму ${amountToSend} успешно проведён.`, "info", 3000);
 
-      paymentsData = paymentsData.filter(p => p["№"] !== invoiceId);
+        if (isEditing) {
+          const idx = paymentsData.findIndex(p => p["№"] === invoiceId);
+          if (idx !== -1) paymentsData[idx]["Сумма"] = amountToSend;
+        }
 
-      filterPayments();
-    })
-    .catch(error => {
-      showNotification(`Ошибка при отправке платежа: ${error.message}`, "error", 5000);
-    })
-    .finally(() => {
-      enableButtons(true);
-    });
+        paymentsData = paymentsData.filter(p => p["№"] !== invoiceId);
+
+        filterPayments();
+      })
+      .catch(error => {
+        console.error("Полная ошибка:", error);
+        showNotification(`Ошибка при отправке платежа: ${error.message}`, "error", 5000);
+      })
+      .finally(() => {
+        enableButtons(true);
+      });
+  }
+
+  // Отправляем данные
+  sendPaymentData(payload);
 }
 
 
