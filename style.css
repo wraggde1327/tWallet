@@ -569,3 +569,7 @@ body {
   color: #666;
   font-weight: 500;
 }
+.table-header > div:first-child,
+.payment-row > div:first-child {
+  padding-left: 10px;
+}

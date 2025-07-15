@@ -292,7 +292,7 @@ function filterPayments() {
     filteredPayments = paymentsData;
   } else {
     filteredPayments = paymentsData.filter(p =>
-      p["Название"].toLowerCase().startsWith(query)
+      p["Название"].toLowerCase().includes(query)
     );
   }
   renderPayments();
