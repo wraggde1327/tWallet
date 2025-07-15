@@ -64,6 +64,13 @@
   .table-header > div:last-child {
     justify-self: end;
     text-align: right;
+    padding-right: 0;
+  }
+  .payment-row > div:last-child .status {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 0;
   }
 }
 
