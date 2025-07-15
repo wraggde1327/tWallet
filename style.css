@@ -1,64 +1,19 @@
-/* Мобильная адаптация (до 600px) */
+/* Мобильная адаптация (до 700px) — объединённый блок */
 @media (max-width: 700px) {
   .container {
     background: #dddddd !important;
   }
-  .payment-row {
-    display: flex;
-    flex-direction: column;
-    font-size: 12px !important;
- /*   background: #e0f7fa !important;*/
-  }
-  .payment-row > div {
-    font-size: 10px !important;
-    line-height: 1.2;
-    white-space: normal;
-    word-break: break-word;
-    overflow-wrap: anywhere;
-   /* background: #c8e6c9 !important;*/
-  }
-  .dialog-edit-input {
-    width: 95vw;           /* почти вся ширина экрана */
-    max-width: 98vw;       /* не вылезает за экран */
-    min-width: 0;
-    font-size: 15px;
-    padding: 10px 14px;
-    margin: 12px auto 0 auto; /* сверху — 12px, по бокам и снизу — auto */
-    display: block;
-    border-radius: 8px;
-    border: 1.5px solid #ccc;
-    box-sizing: border-box;
-  }
-  #dialog {
-    min-width: 0;
-    width: 98vw;
-    max-width: 99vw;
-    box-sizing: border-box;
-    padding-left: 8px;
-    padding-right: 8px;
-  }
-  /* Скрываем столбец 'Тип' и его данные только на мобильных */
-  .table-header > div:nth-child(3),
-  .payment-row > div:nth-child(3) {
-    display: none !important;
-  }
-  .invoice-form {
-    gap: 14px;
-    margin-top: 10px;
-  }
-  .payment-type-group {
-    gap: 6px;
-  }
-  .submit-btn {
-    padding: 11px 0;
-    font-size: 15px;
-  }
+  /* --- Платежи --- */
   .table-header, .payment-row {
     display: grid;
-    grid-template-columns: 30px 1.5fr 1.5fr 1.5fr 1.2fr;
+    grid-template-columns: 30px 1.2fr 0.8fr 0.8fr 0.8fr;
     gap: 4px;
     padding: 10px 0;
     align-items: center;
+  }
+  .table-header > div:nth-child(3),
+  .payment-row > div:nth-child(3) {
+    display: none !important;
   }
   .payment-row > div.status-cell,
   .table-header > div.status-cell {
@@ -83,24 +38,35 @@
     justify-content: flex-end;
     margin-right: 0;
   }
-}
-
-@media (max-width: 700px) {
+  .payment-row {
+    font-size: 12px !important;
+  }
+  .payment-row > div {
+    font-size: 10px !important;
+    line-height: 1.2;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  /* --- Договора --- */
   #contractForm {
     max-width: 90vw;
     width: 90vw;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 12px;
-    padding-bottom: 18px;
+    padding: 12px 8px 18px 8px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
   #contractContent {
     padding-left: 0;
     padding-right: 0;
   }
   #contractForm .contract-row {
+    display: grid;
+    grid-template-columns: min-content min-content min-content min-content;
     gap: 2px;
     margin-bottom: 0;
+    align-items: center;
   }
   #contractForm label.label-text {
     font-size: 12px;
@@ -124,7 +90,8 @@
   }
 }
 
-
+/*/////////////////////////////////////////*/
+/* ОБЩИЕ СТИЛИ */
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
@@ -213,7 +180,7 @@ body {
 }
 .table-header, .payment-row {
   display: grid;
-  grid-template-columns: 40px 1.5fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 40px 1.2fr 0.8fr 0.8fr 0.8fr 0.8fr;
   gap: 12px;
   padding: 12px 0;
   align-items: center;
