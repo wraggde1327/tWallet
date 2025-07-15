@@ -37,6 +37,11 @@
     padding-left: 8px;
     padding-right: 8px;
   }
+  /* Скрываем столбец 'Тип' и его данные */
+  .table-header > div:nth-child(3),
+  .payment-row > div:nth-child(3) {
+    display: none !important;
+  }
 }
 
 
@@ -354,17 +359,18 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0,0,0,0.5);
+  background: rgba(10, 10, 20, 0.88); /* более тёмный фон */
   z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 #user-input-overlay > div {
-  background: white;
+  background: #181a20;
+  color: #fff;
   padding: 32px 24px;
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
   text-align: center;
   min-width: 260px;
   max-width: 90vw;
@@ -373,29 +379,128 @@ body {
   font-size: 16px;
   padding: 8px 12px;
   border-radius: 8px;
-  border: 1.5px solid #ccc;
+  border: 1.5px solid #444;
+  background: #23242a;
+  color: #fff;
   width: 90%;
   margin-bottom: 16px;
   box-sizing: border-box;
 }
 #user-input-overlay button {
-  padding: 8px 18px;
-  border-radius: 12px;
+  padding: 10px 24px;
+  border-radius: 10px;
   border: none;
   font-weight: 600;
-  font-size: 14px;
-  background: #4a90e2;
+  font-size: 15px;
+  background: linear-gradient(90deg, #4a90e2 0%, #357abd 100%);
   color: white;
   cursor: pointer;
   margin-top: 8px;
-  transition: background 0.2s;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(74,144,226,0.10);
 }
 #user-input-overlay button:hover {
-  background: #357abd;
+  background: linear-gradient(90deg, #357abd 0%, #4a90e2 100%);
 }
 #user-input-overlay #userInputError {
-  color: red;
+  color: #ff6b6b;
   margin-top: 10px;
   font-size: 14px;
   display: none;
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 24px;
+  background: none;
+  border-radius: 12px;
+  overflow: hidden;
+  justify-content: center;
+}
+.tab-button {
+  flex: 1 1 0;
+  min-width: 110px;
+  background: #23242a;
+  color: #bfc9d1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 14px 0 12px 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  border-bottom: 2.5px solid transparent;
+  border-radius: 0;
+  letter-spacing: 0.01em;
+}
+.tab-button.active {
+  background: #181a20;
+  color: #4a90e2;
+  border-bottom: 2.5px solid #4a90e2;
+  font-weight: 700;
+}
+.tab-button:not(.active):hover {
+  background: #23242a;
+  color: #fff;
+}
+
+.autocomplete-item {
+  padding: 8px 12px;
+  background: #23242a;
+  color: #fff;
+  cursor: pointer;
+  border-bottom: 1px solid #222;
+  transition: background 0.18s;
+  font-size: 15px;
+}
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+.autocomplete-item:hover {
+  background: #4a90e2;
+  color: #fff;
+}
+.autocomplete-dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: #181a20;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  max-height: 220px;
+  overflow-y: auto;
+  margin-top: 2px;
+}
+.payment-type-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.payment-type-btn {
+  flex: 1 1 0;
+  min-width: 90px;
+  background: #23242a;
+  color: #bfc9d1;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 10px 0 9px 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  border-bottom: 2px solid transparent;
+  border-radius: 8px;
+  letter-spacing: 0.01em;
+}
+.payment-type-btn.active {
+  background: #181a20;
+  color: #4a90e2;
+  border-bottom: 2px solid #4a90e2;
+  font-weight: 700;
+}
+.payment-type-btn:not(.active):hover {
+  background: #23242a;
+  color: #fff;
 }
