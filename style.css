@@ -428,7 +428,7 @@ body {
 /* --- Кнопки выбора типа в счетах --- */
 .payment-type-group {
   display: flex;
-  gap: 8px;
+  gap: 22px;
   margin-bottom: 0;
 }
 .payment-type-btn {
@@ -463,8 +463,8 @@ body {
 /* --- Индикатор загрузки клиентов --- */
 #clientsLoadIndicator {
   display: inline-block;
-  width: 16px;
-  height: 16px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   margin-left: 10px;
   vertical-align: middle;
@@ -536,7 +536,10 @@ body {
   color: #4a90e2;
 }
 .submit-btn {
-  width: 100%;
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
   padding: 12px 0;
   border-radius: 12px;
   border: none;
@@ -569,7 +572,138 @@ body {
   color: #666;
   font-weight: 500;
 }
+.invoice-form label[for="clientSearchInput"] {
+  display: block;
+  margin-bottom: 14px;
+}
 .table-header > div:first-child,
 .payment-row > div:first-child {
   padding-left: 10px;
+}
+
+/* --- Форма договора --- */
+#contractContent {
+  margin-top: 18px;
+}
+#contractContent h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #222;
+  text-align: center;
+}
+#contractForm {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 480px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  padding: 28px 22px 22px 22px;
+}
+#contractForm label.form-label {
+  margin-bottom: 7px;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+#contractForm input[type="text"],
+#contractForm input[type="number"],
+#contractForm input[type="email"],
+#contractForm input[type="tel"],
+#contractForm input[type="date"] {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #ccc;
+  font-size: 15px;
+  background: #fff;
+  color: #222;
+  box-sizing: border-box;
+  margin-bottom: 0;
+}
+#contractForm .contract-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 0;
+}
+#contractForm .input-contract-number {
+  flex: 1 1 0;
+}
+#contractForm .input-contract-date {
+  flex: 1 1 0;
+}
+#contractForm .button-group {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 0;
+}
+#contractForm .button-org, #contractForm .button-tarif {
+  flex: 1 1 0;
+  min-width: 80px;
+  background: #bfc9d1;
+  color: #fff;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 10px 0 9px 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  border-radius: 10px;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+#contractForm .button-org.active {
+  background: #4a90e2 !important;
+  color: #fff !important;
+}
+#contractForm .button-org:not(.active):hover {
+  background: #357abd;
+  color: #fff;
+}
+#contractForm .button-tarif.active {
+  background: #3bb77e !important;
+  color: #fff !important;
+}
+#contractForm .button-tarif:not(.active):hover {
+  background: #3bb77e;
+  color: #fff;
+}
+#contractForm .submit-btn {
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  padding: 12px 0;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  font-size: 16px;
+  background: linear-gradient(90deg, #4a90e2 0%, #357abd 100%);
+  color: white;
+  cursor: pointer;
+  margin-top: 8px;
+  margin-bottom: 0;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(74,144,226,0.10);
+}
+#contractForm .submit-btn:hover {
+  background: linear-gradient(90deg, #357abd 0%, #4a90e2 100%);
+}
+@media (max-width: 1000px) {
+  #contractForm {
+    gap: 12px;
+    padding: 16px 6px 12px 6px;
+  }
+  #contractForm .button-group {
+    gap: 8px;
+  }
+  #contractForm .submit-btn {
+    padding: 11px 0;
+    font-size: 15px;
+  }
 }

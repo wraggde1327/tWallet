@@ -845,3 +845,67 @@ invoiceForm.addEventListener('submit', function(e) {
       });
   }, 600);
 });
+
+// --- Логика для вкладки 'Договора' ---
+const contractForm = document.getElementById('contractForm');
+if (contractForm) {
+  contractForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    // Сбор данных
+    const payload = {
+      contractNumber: document.getElementById('contractNumber').value.trim(),
+      contractDate: document.getElementById('contractDate').value.trim(),
+      orgType: document.getElementById('orgType').value.trim(),
+      zakazchik: document.getElementById('zakazchik').value.trim(),
+      inn: document.getElementById('inn').value.trim(),
+      ogrn: document.getElementById('ogrn').value.trim(),
+      lico: document.getElementById('lico').value.trim(),
+      osnovan: document.getElementById('osnovan').value.trim(),
+      rucl: document.getElementById('rucl').value.trim(),
+      adress: document.getElementById('adress').value.trim(),
+      tel: document.getElementById('tel').value.trim(),
+      pochta: document.getElementById('pochta').value.trim(),
+      bank: document.getElementById('bank').value.trim(),
+      bik: document.getElementById('bik').value.trim(),
+      rs: document.getElementById('rs').value.trim(),
+      ks: document.getElementById('ks').value.trim(),
+      tarif: document.getElementById('tarif').value.trim(),
+      who: tgUserId
+    };
+    // Валидация обязательных полей
+    const required = [
+      'contractNumber','contractDate','orgType','zakazchik','inn','ogrn','lico','osnovan','rucl','adress','pochta','bank','bik','rs','tarif','who'
+    ];
+    for (const key of required) {
+      if (!payload[key]) {
+        showNotification('Заполните все обязательные поля!', 'error', 2500);
+        return;
+      }
+    }
+    showNotification('Договор отправляем...', 'status', 1800);
+    setTimeout(() => {
+      showModalLoading('Создание договора...');
+      fetch('https://24sdmahom.ru/contracts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(res => res.json())
+        .then(data => {
+          hideModalLoading();
+          if (data && data.message) {
+            showNotification(data.message, 'info', 3000);
+            contractForm.reset();
+          } else if (data && data.error) {
+            showNotification(data.error, 'error', 4000);
+          } else {
+            showNotification('Ошибка создания договора', 'error', 3000);
+          }
+        })
+        .catch(err => {
+          hideModalLoading();
+          showNotification('Ошибка при создании договора', 'error', 3000);
+        });
+    }, 600);
+  });
+}
