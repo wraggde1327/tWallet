@@ -156,7 +156,6 @@ body {
   font-size: 13px;
   font-weight: 600;
   border-bottom: 2px solid #cfd8dc;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 .payment-row {
@@ -599,7 +598,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 7px;
-  padding: 32px 28px 22px 28px;
+  padding: 30px 28px 40px 28px;
   max-width: 480px;
   margin: 0 auto;
   background: #fff;
@@ -609,7 +608,7 @@ body {
   padding-right: 28px;
 }
 #contractForm label.form-label {
-  margin-bottom: 2px;
+  margin-bottom: 0px;
   font-size: 14px;
   color: #666;
   font-weight: 500;
@@ -631,7 +630,7 @@ body {
 }
 #contractForm .contract-row {
   display: flex;
-  gap: 6px;
+  gap: 5px;
   align-items: center;
   margin-bottom: 0;
 }
@@ -652,12 +651,12 @@ body {
 #contractForm .input-contract-number {
   width: 45px;
   min-width: 45px;
-  max-width: 45px;
+  max-width: 100px;
 }
 #contractForm .input-contract-date {
   width: 90px;
   min-width: 90px;
-  max-width: 90px;
+  max-width: 150px;
 }
 #contractForm .button-group {
   display: flex;
@@ -716,17 +715,4 @@ body {
 }
 #contractForm .submit-btn:hover {
   background: linear-gradient(90deg, #357abd 0%, #4a90e2 100%);
-}
-@media (max-width: 1000px) {
-  #contractForm {
-    gap: 12px;
-    padding: 16px 6px 12px 6px;
-  }
-  #contractForm .button-group {
-    gap: 8px;
-  }
-  #contractForm .submit-btn {
-    padding: 11px 0;
-    font-size: 15px;
-  }
 }
