@@ -21,10 +21,92 @@ const buttons = dialogButtons.getElementsByTagName("button"); // [0] Да, [1] �
 // --- Telegram Web App интеграция ---
 const tgUserInfoDiv = document.getElementById('tgUserInfo');
 let tgUserLabel = '';
-let tgUserId = null;
+let tgUserId = null; // username
 let tgUserObj = null;
 
+// Список разрешённых пользователей
+const allowedUsers = ['nick_xnm', 'jekminaev', 'boss'];
+
 const tg = window.Telegram?.WebApp;
+
+function askForUser() {
+  return new Promise((resolve, reject) => {
+    // Создаём overlay
+    let overlay = document.getElementById('user-input-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'user-input-overlay';
+      overlay.style.position = 'fixed';
+      overlay.style.top = 0;
+      overlay.style.left = 0;
+      overlay.style.width = '100vw';
+      overlay.style.height = '100vh';
+      overlay.style.background = 'rgba(0,0,0,0.5)';
+      overlay.style.zIndex = 2000;
+      overlay.style.display = 'flex';
+      overlay.style.alignItems = 'center';
+      overlay.style.justifyContent = 'center';
+      document.body.appendChild(overlay);
+    }
+    // Создаём окно
+    let modal = document.createElement('div');
+    modal.style.background = 'white';
+    modal.style.padding = '32px 24px';
+    modal.style.borderRadius = '16px';
+    modal.style.boxShadow = '0 8px 24px rgba(0,0,0,0.25)';
+    modal.style.textAlign = 'center';
+    modal.innerHTML = `<div style="font-size:18px;margin-bottom:16px;">Введите имя пользователя</div>
+      <input id="userInputField" type="text" style="font-size:16px;padding:8px 12px;border-radius:8px;border:1.5px solid #ccc;width:90%;margin-bottom:16px;" placeholder="никнейм (например, nick_xnm)" />
+      <br><button id="userInputBtn" style="padding:8px 18px;border-radius:12px;border:none;font-weight:600;font-size:14px;background:#4a90e2;color:white;cursor:pointer;">Войти</button>
+      <div id="userInputError" style="color:red;margin-top:10px;font-size:14px;display:none;"></div>`;
+    overlay.appendChild(modal);
+    const input = modal.querySelector('#userInputField');
+    const btn = modal.querySelector('#userInputBtn');
+    const errorDiv = modal.querySelector('#userInputError');
+    btn.onclick = () => {
+      const value = input.value.trim();
+      if (!value) {
+        errorDiv.textContent = 'Введите никнейм!';
+        errorDiv.style.display = 'block';
+        return;
+      }
+      if (!allowedUsers.includes(value)) {
+        errorDiv.textContent = 'Нет доступа!';
+        errorDiv.style.display = 'block';
+        return;
+      }
+      overlay.remove();
+      resolve(value);
+    };
+    input.onkeydown = (e) => {
+      if (e.key === 'Enter') btn.onclick();
+    };
+    input.focus();
+  });
+}
+
+async function ensureUser() {
+  // Всегда спрашиваем username, даже если есть Telegram
+  tgUserId = localStorage.getItem('manualUserId');
+  if (tg && tg.initDataUnsafe?.user?.username) {
+    tgUserId = tg.initDataUnsafe.user.username;
+    localStorage.setItem('manualUserId', tgUserId);
+  }
+  if (!tgUserId) {
+    tgUserId = await askForUser();
+    localStorage.setItem('manualUserId', tgUserId);
+  }
+  // Проверяем разрешён ли пользователь
+  if (!allowedUsers.includes(tgUserId)) {
+    showNotification('Нет доступа! Пользователь не разрешён.', 'error', 5000);
+    throw new Error('Нет доступа!');
+  }
+  tgUserLabel = tgUserId;
+  if (tgUserInfoDiv) {
+    tgUserInfoDiv.textContent = tgUserLabel;
+    tgUserInfoDiv.title = tgUserId;
+  }
+}
 
 if (tg) {
   document.body.classList.add('telegram-webapp');
@@ -33,7 +115,7 @@ if (tg) {
   const user = tg.initDataUnsafe?.user;
   if (user) {
     tgUserObj = user;
-    tgUserId = user.id;
+    tgUserId = user.username ? user.username : (user.id ? String(user.id) : null);
     tgUserLabel = user.username ? '@' + user.username : 'ID: ' + user.id;
 
     if (tgUserInfoDiv) {
@@ -42,6 +124,12 @@ if (tg) {
     }
   }
 }
+
+// Проверяем пользователя при запуске
+ensureUser().catch(() => {
+  // Блокируем интерфейс, если нет доступа
+  document.body.innerHTML = '<div style="color:red;font-size:22px;text-align:center;margin-top:30vh;">Нет доступа к приложению</div>';
+});
 
 // --- Переключение вкладок ---
 
