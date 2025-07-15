@@ -643,3 +643,123 @@ clearSearchBtn.addEventListener("click", clearSearch);
 
 // Первая загрузка
 fetchPayments();
+
+// --- Логика для вкладки 'Счета' ---
+const invoiceTab = document.getElementById('invoiceTab');
+const invoiceContent = document.getElementById('invoiceContent');
+const invoiceForm = document.getElementById('invoiceForm');
+const clientSearchInput = document.getElementById('clientSearchInput');
+const clientDropdown = document.getElementById('clientDropdown');
+const paymentTypeBtns = document.querySelectorAll('.payment-type-btn');
+const paymentTypeInput = document.getElementById('paymentTypeInput');
+const amountInput = document.getElementById('amountInput');
+const clientsLoadIndicator = document.getElementById('clientsLoadIndicator');
+
+let clientsList = [];
+let clientsLoaded = false;
+
+// Получение клиентов при переходе на вкладку 'Счета'
+document.getElementById('invoiceTab').addEventListener('click', () => {
+  if (!clientsLoaded) {
+    clientsLoadIndicator.textContent = '⏳';
+    fetch('/clients')
+      .then(res => res.json())
+      .then(data => {
+        clientsList = Array.isArray(data) ? data : [];
+        clientsLoaded = true;
+        clientsLoadIndicator.textContent = '✓';
+      })
+      .catch(err => {
+        clientsLoadIndicator.textContent = '⚠️';
+        showNotification('Ошибка загрузки клиентов', 'error', 4000);
+      });
+  }
+});
+
+// Автозаполнение клиентов
+clientSearchInput.addEventListener('input', function() {
+  const query = this.value.trim().toLowerCase();
+  clientDropdown.innerHTML = '';
+  if (!query || !clientsList.length) return;
+  const matches = clientsList.filter(c => c.name.toLowerCase().includes(query));
+  matches.slice(0, 8).forEach(client => {
+    const div = document.createElement('div');
+    div.className = 'autocomplete-item';
+    div.textContent = client.name;
+    div.onclick = () => {
+      clientSearchInput.value = client.name;
+      clientDropdown.innerHTML = '';
+      clientSearchInput.dataset.clientId = client.id;
+    };
+    clientDropdown.appendChild(div);
+  });
+});
+
+document.addEventListener('click', (e) => {
+  if (!clientDropdown.contains(e.target) && e.target !== clientSearchInput) {
+    clientDropdown.innerHTML = '';
+  }
+});
+
+// Выбор типа платежа
+paymentTypeBtns.forEach(btn => {
+  btn.addEventListener('click', function() {
+    paymentTypeBtns.forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    paymentTypeInput.value = this.dataset.type;
+  });
+});
+
+// Отправка формы счета
+invoiceForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const clientName = clientSearchInput.value.trim();
+  const clientObj = clientsList.find(c => c.name === clientName);
+  const clientId = clientObj ? clientObj.id : null;
+  const sum = parseFloat(amountInput.value);
+  const type = paymentTypeInput.value;
+  if (!clientId) {
+    showNotification('Выберите клиента из списка!', 'error', 4000);
+    return;
+  }
+  if (!sum || sum <= 0) {
+    showNotification('Введите корректную сумму!', 'error', 4000);
+    return;
+  }
+  if (!type) {
+    showNotification('Выберите тип!', 'error', 4000);
+    return;
+  }
+  if (!tgUserId) {
+    showNotification('Пользователь не определён!', 'error', 4000);
+    return;
+  }
+  const payload = {
+    id: clientId,
+    sum: sum,
+    type: type,
+    who: tgUserId
+  };
+  showNotification('Создание счета...', 'status', 1500);
+  fetch('/invoices', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.message) {
+        showNotification('Счет успешно создан!', 'info', 3000);
+        invoiceForm.reset();
+        clientSearchInput.dataset.clientId = '';
+        paymentTypeBtns.forEach(b => b.classList.remove('active'));
+        paymentTypeBtns[0].classList.add('active');
+        paymentTypeInput.value = paymentTypeBtns[0].dataset.type;
+      } else {
+        showNotification('Ошибка создания счета', 'error', 4000);
+      }
+    })
+    .catch(err => {
+      showNotification('Ошибка при создании счета', 'error', 4000);
+    });
+});
