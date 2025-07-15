@@ -85,23 +85,112 @@ function askForUser() {
   });
 }
 
+// Функция для скрытия и показа основного контента
+function setAppVisibility(visible) {
+  const container = document.querySelector('.container');
+  if (container) {
+    container.style.display = visible ? '' : 'none';
+  }
+  // Скрываем диалоги и уведомления
+  const dialog = document.getElementById('dialog');
+  if (dialog) dialog.style.display = 'none';
+  const dialogOverlay = document.getElementById('dialog-overlay');
+  if (dialogOverlay) dialogOverlay.style.display = 'none';
+  const notification = document.getElementById('notification');
+  if (notification) notification.style.display = 'none';
+  const notificationOverlay = document.getElementById('notification-overlay');
+  if (notificationOverlay) notificationOverlay.style.display = 'none';
+}
+
+function showUserWelcome(nick) {
+  setAppVisibility(false);
+  return new Promise((resolve) => {
+    let overlay = document.getElementById('user-input-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'user-input-overlay';
+      overlay.style.position = 'fixed';
+      overlay.style.top = 0;
+      overlay.style.left = 0;
+      overlay.style.width = '100vw';
+      overlay.style.height = '100vh';
+      overlay.style.background = 'rgba(0,0,0,0.5)';
+      overlay.style.zIndex = 2000;
+      overlay.style.display = 'flex';
+      overlay.style.alignItems = 'center';
+      overlay.style.justifyContent = 'center';
+      document.body.appendChild(overlay);
+    }
+    let modal = document.createElement('div');
+    modal.style.background = 'white';
+    modal.style.padding = '32px 24px';
+    modal.style.borderRadius = '16px';
+    modal.style.boxShadow = '0 8px 24px rgba(0,0,0,0.25)';
+    modal.style.textAlign = 'center';
+    if (nick) {
+      modal.innerHTML = `<div style="font-size:18px;margin-bottom:16px;">Приветствуем, <b>@${nick}</b>!</div>
+        <button id="userInputBtn" style="padding:8px 18px;border-radius:12px;border:none;font-weight:600;font-size:14px;background:#4a90e2;color:white;cursor:pointer;">Продолжить</button>`;
+    } else {
+      modal.innerHTML = `<div style="font-size:18px;margin-bottom:16px;">Введите никнейм</div>
+        <input id="userInputField" type="text" style="font-size:16px;padding:8px 12px;border-radius:8px;border:1.5px solid #ccc;width:90%;margin-bottom:16px;" placeholder="никнейм (например, nick_xnm)" />
+        <br><button id="userInputBtn" style="padding:8px 18px;border-radius:12px;border:none;font-weight:600;font-size:14px;background:#4a90e2;color:white;cursor:pointer;">Продолжить</button>
+        <div id="userInputError" style="color:red;margin-top:10px;font-size:14px;display:none;"></div>`;
+    }
+    overlay.appendChild(modal);
+    const btn = modal.querySelector('#userInputBtn');
+    if (nick) {
+      btn.onclick = () => {
+        overlay.remove();
+        setAppVisibility(true);
+        resolve(nick);
+      };
+    } else {
+      const input = modal.querySelector('#userInputField');
+      const errorDiv = modal.querySelector('#userInputError');
+      btn.onclick = () => {
+        const value = input.value.trim();
+        if (!value) {
+          errorDiv.textContent = 'Введите никнейм!';
+          errorDiv.style.display = 'block';
+          return;
+        }
+        if (!allowedUsers.includes(value)) {
+          errorDiv.textContent = 'Нет доступа!';
+          errorDiv.style.display = 'block';
+          return;
+        }
+        overlay.remove();
+        setAppVisibility(true);
+        resolve(value);
+      };
+      input.onkeydown = (e) => {
+        if (e.key === 'Enter') btn.onclick();
+      };
+      input.focus();
+    }
+  });
+}
+
 async function ensureUser() {
-  // Всегда спрашиваем username, даже если есть Telegram
-  tgUserId = localStorage.getItem('manualUserId');
+  // Всегда показываем всплывашку
+  let savedNick = localStorage.getItem('manualUserId');
+  let nick = null;
   if (tg && tg.initDataUnsafe?.user?.username) {
-    tgUserId = tg.initDataUnsafe.user.username;
-    localStorage.setItem('manualUserId', tgUserId);
+    savedNick = tg.initDataUnsafe.user.username;
+    localStorage.setItem('manualUserId', savedNick);
   }
-  if (!tgUserId) {
-    tgUserId = await askForUser();
-    localStorage.setItem('manualUserId', tgUserId);
+  if (savedNick && allowedUsers.includes(savedNick)) {
+    nick = await showUserWelcome(savedNick);
+  } else {
+    nick = await showUserWelcome(null);
+    localStorage.setItem('manualUserId', nick);
   }
-  // Проверяем разрешён ли пользователь
-  if (!allowedUsers.includes(tgUserId)) {
+  if (!allowedUsers.includes(nick)) {
     showNotification('Нет доступа! Пользователь не разрешён.', 'error', 5000);
     throw new Error('Нет доступа!');
   }
-  tgUserLabel = tgUserId;
+  tgUserId = nick;
+  tgUserLabel = nick;
   if (tgUserInfoDiv) {
     tgUserInfoDiv.textContent = tgUserLabel;
     tgUserInfoDiv.title = tgUserId;
