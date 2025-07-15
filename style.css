@@ -37,10 +37,21 @@
     padding-left: 8px;
     padding-right: 8px;
   }
-  /* Скрываем столбец 'Тип' и его данные */
+  /* Скрываем столбец 'Тип' и его данные только на мобильных */
   .table-header > div:nth-child(3),
   .payment-row > div:nth-child(3) {
     display: none !important;
+  }
+  .invoice-form {
+    gap: 14px;
+    margin-top: 10px;
+  }
+  .payment-type-group {
+    gap: 6px;
+  }
+  .submit-btn {
+    padding: 11px 0;
+    font-size: 15px;
   }
 }
 

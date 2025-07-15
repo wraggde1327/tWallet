@@ -705,13 +705,13 @@ document.getElementById('invoiceTab').addEventListener('click', () => {
   if (!clientsLoaded) {
     showModalLoading('Загрузка клиентов...');
     setClientsIndicator('loading');
-    fetch('/clients')
+    fetch('https://24sdmahom.ru/clients')
       .then(res => res.json())
       .then(data => {
         clientsList = Array.isArray(data) ? data : [];
         clientsLoaded = true;
         setClientsIndicator('loaded');
-        hideModalLoading();
+        setTimeout(hideModalLoading, 2000);
       })
       .catch(err => {
         setClientsIndicator();
@@ -816,7 +816,7 @@ invoiceForm.addEventListener('submit', function(e) {
     who: tgUserId
   };
   showModalLoading('Создание счета...');
-  fetch('/invoices', {
+  fetch('https://24sdmahom.ru/invoices', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
     body: JSON.stringify(payload)
