@@ -12,7 +12,8 @@
 
   /* --- Платежи --- */
     .payment-row {
-    grid-template-columns: 20px 1.2fr 0.8fr 0.8fr 0.8fr;
+    display: grid;
+    grid-template-columns: 30px 1.2fr 0.8fr 0.8fr 0.8fr; !important;
     gap: 4px;
     padding: 0 5px;
     font-size: 10px !important;
@@ -35,7 +36,8 @@
   .table-header {
     font-size: 10px !important;
     font-weight: 450 !important;
-    grid-template-columns: 20px 1.2fr 0.8fr 0.8fr 0.8fr;
+    grid-template-columns: 30px 1.2fr 0.8fr 0.8fr 0.8fr; !important;
+    display: grid;
   }
    
   
