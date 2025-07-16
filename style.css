@@ -9,23 +9,18 @@
     padding: 10px 10px 10px 10px;
     box-sizing: border-box;
   }
+
   /* --- Платежи --- */
-  
-  .payment-row {
+    .payment-row {
+    grid-template-columns: 30px 1.2fr 0.8fr 0.8fr 0.8fr;
+    gap: 4px;
+    padding: 0 5px;
     font-size: 10px !important;
+    min-height: 16px;
   }
-
-
-  .table-header {
-    font-size: 9px;
-      }
-
   .payment-row > div {
     font-size: 10px !important;
     line-height: 1.7;
-    white-space: normal;
-    word-break: break-word;
-    overflow-wrap: anywhere;
     padding-top: 0;
     padding-bottom: 0;
   }
@@ -36,7 +31,11 @@
     text-align: center;
     padding-right: 5px;
   }
-
+  
+  .table-header {
+    font-size: 9px;
+      }
+   
   
   /* --- Договора --- */
   #contractForm {
@@ -182,6 +181,7 @@ body {
   border-bottom: 2px solid #cfd8dc;
   letter-spacing: 0.05em;
 }
+/* --- Основной стиль для .payment-row (десктоп и общие) --- */
 .payment-row {
   display: grid;
   grid-template-columns: 40px 1fr 0.7fr 0.8fr 0.6fr 0.8fr;
@@ -202,7 +202,6 @@ body {
   transition: background-color 0.25s ease;
   line-height: 1.1;
 }
-
 .payment-row:hover {
   background-color: #e8f0fe;
   box-shadow: 0 4px 8px rgba(74,144,226,0.15);
