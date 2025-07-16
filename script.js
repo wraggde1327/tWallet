@@ -677,11 +677,13 @@ function showModalLoading(text = 'Загрузка...') {
     modal.style.display = 'flex';
     modal.style.alignItems = 'center';
     modal.style.justifyContent = 'center';
-    modal.innerHTML = `<div style="background:#181a20;color:#fff;padding:32px 24px;border-radius:16px;font-size:18px;box-shadow:0 8px 32px rgba(0,0,0,0.45);text-align:center;">${text}</div>`;
+    modal.innerHTML = `<div style="background:#4a90e2;color:#fff;padding:32px 24px;border-radius:16px;font-size:18px;box-shadow:0 8px 32px rgba(0,0,0,0.45);text-align:center;">${text}</div>`;
     document.body.appendChild(modal);
   } else {
     modal.style.display = 'flex';
     modal.firstChild.textContent = text;
+    modal.firstChild.style.background = '#4a90e2';
+    modal.firstChild.style.color = '#fff';
   }
 }
 function hideModalLoading() {
@@ -829,22 +831,22 @@ invoiceForm.addEventListener('submit', function(e) {
     })
       .then(res => res.json())
       .then(data => {
-        hideModalLoading();
+        hideModalLoading && hideModalLoading();
         if (data && data.message) {
-          showNotification(data.message, 'info', 3000);
+          showNotification(data.message, 'info', 2000);
           invoiceForm.reset();
           clientSearchInput.dataset.clientId = '';
           paymentTypeBtns.forEach(b => b.classList.remove('active', 'blue', 'green', 'yellow'));
           paymentTypeBtns[0].classList.add('active', 'blue');
           paymentTypeInput.value = paymentTypeBtns[0].dataset.type;
         } else if (data && data.error) {
-          showNotification(data.error, 'error', 4000);
+          showNotification(data.error, 'error', 2000);
         } else {
           showNotification('Ошибка создания счета', 'error', 3000);
         }
       })
       .catch(err => {
-        hideModalLoading();
+        hideModalLoading && hideModalLoading();
         showNotification('Ошибка при создании счета', 'error', 3000);
       });
   }, 600);
@@ -942,7 +944,7 @@ if (contractForm) {
     ];
     for (const key of required) {
       if (!payload[key]) {
-        hideModalLoading(); // <--- добавьте эту строку
+        hideModalLoading && hideModalLoading();
         showNotification('Заполните все обязательные поля!', 'error', 2500);
         return;
       }
@@ -957,9 +959,9 @@ if (contractForm) {
       })
         .then(res => res.json())
         .then(data => {
-          hideModalLoading();
+          hideModalLoading && hideModalLoading();
           if (data && data.message) {
-            showNotification(data.message, 'info', 3000);
+            showNotification(data.message, 'info', 2000);
             contractForm.reset();
             // После сброса — снова подставить номер и дату, активировать кнопки
             if (contractNumberInput) contractNumberInput.value = getDefaultContractNumber();
@@ -975,13 +977,13 @@ if (contractForm) {
               if (tarifInput) tarifInput.value = tarifButtons[0].dataset.value;
             }
           } else if (data && data.error) {
-            showNotification(data.error, 'error', 4000);
+            showNotification(data.error, 'error', 2000);
           } else {
             showNotification('Ошибка создания договора', 'error', 3000);
           }
         })
         .catch(err => {
-          hideModalLoading();
+          hideModalLoading && hideModalLoading();
           showNotification('Ошибка при создании договора', 'error', 3000);
         });
     }, 600);
