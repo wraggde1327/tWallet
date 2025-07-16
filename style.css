@@ -35,6 +35,7 @@
   .table-header {
     font-size: 10px !important;
     font-weight: 450 !important;
+    grid-template-columns: 20px 1.2fr 0.8fr 0.8fr 0.8fr;
   }
    
   
