@@ -89,12 +89,15 @@
   <form id="contractForm" novalidate>
     <!-- Поля договора (по примеру из contract.html) -->
     
-     <div class="contract-row">
-  <label for="contractNumber" class="label-text">Договор №</label>
-  <input type="text" id="contractNumber" class="input-field input-contract-number" />
-
-  <label for="contractDate" class="label-text date-label">от</label>
-  <input type="date" id="contractDate" class="input-field input-contract-date" />
+     <div class="contract-header-fields">
+  <div class="contract-field-group">
+    <label for="contractNumber" class="form-label">Договор №</label>
+    <input type="text" id="contractNumber" class="form-control input-contract-number" />
+  </div>
+  <div class="contract-field-group">
+    <label for="contractDate" class="form-label">от</label>
+    <input type="date" id="contractDate" class="form-control input-contract-date" />
+  </div>
 </div>
 
 
