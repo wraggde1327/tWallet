@@ -8,6 +8,9 @@ let lastUpdated = null;
 let selectedPayment = null;
 let isEditing = false;
 let editInput = null;
+let dialogMode = 'payment';
+let pendingInvoiceData = null;
+let sessionInvoices = [];
 
 const paymentsList = document.getElementById("paymentsList");
 const totalSumEl = document.getElementById("totalSum");
@@ -396,6 +399,8 @@ function renderPayments() {
 
 // Открыть диалог
 function openDialog(row) {
+  dialogMode = 'payment';
+  pendingInvoiceData = null;
   selectedPayment = row;
   isEditing = false;
 
@@ -611,6 +616,8 @@ function closeDialog() {
   dialog.style.display = "none";
   dialogOverlay.style.display = "none";
   selectedPayment = null;
+  pendingInvoiceData = null;
+  dialogMode = 'payment';
   isEditing = false;
 
   buttons[1].style.display = "inline-block"; // показать "Изменить", если скрыта
@@ -618,6 +625,61 @@ function closeDialog() {
   if (editInput) {
     editInput.remove();
     editInput = null;
+  }
+}
+
+function openInvoiceConfirmDialog(data) {
+  dialogMode = 'invoice';
+  pendingInvoiceData = data;
+  selectedPayment = null;
+  isEditing = false;
+
+  if (editInput) {
+    editInput.remove();
+    editInput = null;
+  }
+
+  const sumFormatted = data.sum.toLocaleString('ru-RU');
+  dialogText.innerHTML = `Создать <strong>${data.type.toLowerCase()}</strong> для «<strong>${data.clientName}</strong>» на сумму <strong>${sumFormatted} ₽</strong>?`;
+
+  buttons[0].style.display = "inline-block";
+  buttons[1].style.display = "none";
+  buttons[2].style.display = "inline-block";
+
+  enableButtons(true);
+  dialog.style.display = "block";
+  dialogOverlay.style.display = "block";
+}
+
+function renderSessionInvoices() {
+  const list = document.getElementById('sessionInvoicesList');
+  if (!list) return;
+
+  if (!sessionInvoices.length) {
+    list.innerHTML = '';
+    list.style.display = 'none';
+    return;
+  }
+
+  list.style.display = 'block';
+  list.innerHTML = '<div class="session-invoices-title">Создано в этой сессии</div>' +
+    sessionInvoices.map(item => {
+      const time = item.time.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+      const sum = item.sum.toLocaleString('ru-RU');
+      return `<div class="session-invoice-item">${item.clientName} ${item.type.toLowerCase()} на ${sum}₽ время ${time}</div>`;
+    }).join('');
+}
+
+function addSessionInvoice(clientName, type, sum) {
+  sessionInvoices.unshift({ clientName, type, sum, time: new Date() });
+  renderSessionInvoices();
+}
+
+function onDialogConfirm() {
+  if (dialogMode === 'invoice') {
+    confirmInvoiceCreate();
+  } else {
+    confirmPayment();
   }
 }
 
@@ -655,7 +717,7 @@ function showNotification(message, type = "info", duration = 2000) {
 }
 
 // Назначаем обработчики кнопок (без inline onclick)
-buttons[0].addEventListener("click", confirmPayment); // Да
+buttons[0].addEventListener("click", onDialogConfirm); // Да
 buttons[1].addEventListener("click", startEdit);      // Изменить
 buttons[2].addEventListener("click", closeDialog);    // Нет
 
@@ -816,7 +878,7 @@ if (paymentTypeBtns.length) {
   paymentTypeInput.value = paymentTypeBtns[0].dataset.type;
 }
 
-// Отправка формы счета
+// Отправка формы счета — сначала подтверждение
 invoiceForm.addEventListener('submit', function(e) {
   e.preventDefault();
   const clientName = clientSearchInput.value.trim();
@@ -840,13 +902,27 @@ invoiceForm.addEventListener('submit', function(e) {
     showNotification('Пользователь не определён!', 'error', 2000);
     return;
   }
+
+  openInvoiceConfirmDialog({ clientId, clientName, sum, type });
+});
+
+function confirmInvoiceCreate() {
+  if (!pendingInvoiceData) {
+    showNotification('Ошибка: данные счета не найдены', 'error', 2000);
+    return;
+  }
+
+  const { clientId, clientName, sum, type } = pendingInvoiceData;
   const payload = {
     id: clientId,
     sum: sum,
     type: type,
     who: tgUserId
   };
+
+  closeDialog();
   showNotification('Счет отправляем...', 'status', 1800);
+
   setTimeout(() => {
     showModalLoading('Создание счета...');
     fetch(API_BASE + '/invoices', {
@@ -859,6 +935,7 @@ invoiceForm.addEventListener('submit', function(e) {
         hideModalLoading && hideModalLoading();
         if (data && data.message) {
           showNotification(data.message, 'info', 2000);
+          addSessionInvoice(clientName, type, sum);
           invoiceForm.reset();
           clientSearchInput.dataset.clientId = '';
           paymentTypeBtns.forEach(b => b.classList.remove('active', 'blue', 'green', 'yellow'));
@@ -875,7 +952,7 @@ invoiceForm.addEventListener('submit', function(e) {
         showNotification('Ошибка при создании счета', 'error', 3000);
       });
   }, 600);
-});
+}
 
 // --- Логика для вкладки 'Договора' ---
 const contractForm = document.getElementById('contractForm');

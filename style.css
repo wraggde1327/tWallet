@@ -514,6 +514,33 @@ body {
   box-shadow: 0 0 0 1px #3bb77e;
 }
 
+.session-invoices-list {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #cfd8dc;
+}
+
+.session-invoices-title {
+  font-size: 13px;
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.session-invoice-item {
+  font-size: 14px;
+  color: #333;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  line-height: 1.4;
+}
+
+.session-invoice-item:last-child {
+  border-bottom: none;
+}
+
 /* --- Форма счета --- */
 .invoice-form {
   display: flex;
