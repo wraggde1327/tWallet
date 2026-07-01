@@ -1,3 +1,6 @@
+// --- Базовый URL API ---
+const API_BASE = "https://24sdmahom.ru";
+
 // --- Переменные и DOM-элементы ---
 let paymentsData = [];
 let filteredPayments = [];
@@ -255,10 +258,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// Загрузка данных
-function fetchPayments() {
+// Загрузка данных с автоматическим повтором при ошибке
+function fetchPayments(retryCount = 0) {
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY_MS = 2000;
+
   updatedAtEl.textContent = "Обновление...";
-  fetch("https://24sdmahom.ru/pending")
+  fetch(API_BASE + "/pending")
     .then(res => {
       console.log("Статус ответа загрузки:", res.status, res.statusText);
       if (!res.ok) {
@@ -268,6 +274,15 @@ function fetchPayments() {
     })
     .then(data => {
       console.log("Загруженные данные:", data);
+
+      if (data && data.error) {
+        throw new Error(`Ошибка сервера: ${data.error}`);
+      }
+
+      if (!Array.isArray(data)) {
+        throw new Error("Некорректный формат данных: ожидался массив");
+      }
+
       console.log("Структура первого элемента:", data.length > 0 ? data[0] : "Нет данных");
       
       paymentsData = data;
@@ -276,12 +291,19 @@ function fetchPayments() {
       renderPayments();
     })
     .catch(err => {
-      console.error("Полная ошибка загрузки:", err);
-      paymentsList.innerHTML = "<p style='color:red; padding:12px;'>Ошибка загрузки данных</p>";
+      console.error("Ошибка загрузки (попытка " + (retryCount + 1) + "):", err);
+
+      if (retryCount < MAX_RETRIES) {
+        updatedAtEl.textContent = `Повтор через ${RETRY_DELAY_MS / 1000}с... (${retryCount + 1}/${MAX_RETRIES})`;
+        setTimeout(() => fetchPayments(retryCount + 1), RETRY_DELAY_MS);
+        return;
+      }
+
+      paymentsList.innerHTML = "<p style='color:red; padding:12px;'>Ошибка загрузки данных. Нажмите ⟳ для повтора.</p>";
       totalSumEl.textContent = "Общая сумма: 0";
       updatedAtEl.textContent = "Обновлено: —";
       paymentsCountBadge.textContent = "0";
-      showNotification("Ошибка загрузки данных. Проверьте соединение.", "error", 5000);
+      showNotification("Ошибка загрузки данных: " + err.message, "error", 5000);
     });
 }
 
@@ -528,7 +550,7 @@ function confirmPayment() {
       body: useFormData ? payloadToSend : JSON.stringify(payloadToSend)
     };
 
-    fetch("https://24sdmahom.ru/update_invoice", requestOptions)
+    fetch(API_BASE + "/update_invoice", requestOptions)
       .then(response => {
         console.log("Ответ сервера:", response.status, response.statusText);
         
@@ -662,16 +684,23 @@ let clientsLoaded = false;
 document.getElementById('invoiceTab').addEventListener('click', () => {
   if (!clientsLoaded) {
     clientsLoadIndicator.textContent = '⏳';
-    fetch('/clients')
-      .then(res => res.json())
+    fetch(API_BASE + '/clients')
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then(data => {
+        if (data && data.error) {
+          throw new Error(data.error);
+        }
         clientsList = Array.isArray(data) ? data : [];
         clientsLoaded = true;
         clientsLoadIndicator.textContent = '✓';
       })
       .catch(err => {
+        console.error('Ошибка загрузки клиентов:', err);
         clientsLoadIndicator.textContent = '⚠️';
-        showNotification('Ошибка загрузки клиентов', 'error', 4000);
+        showNotification('Ошибка загрузки клиентов: ' + err.message, 'error', 4000);
       });
   }
 });
@@ -741,13 +770,19 @@ invoiceForm.addEventListener('submit', function(e) {
     who: tgUserId
   };
   showNotification('Создание счета...', 'status', 1500);
-  fetch('/invoices', {
+  fetch(API_BASE + '/invoices', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
     body: JSON.stringify(payload)
   })
-    .then(res => res.json())
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
     .then(data => {
+      if (data && data.error) {
+        throw new Error(data.error);
+      }
       if (data && data.message) {
         showNotification('Счет успешно создан!', 'info', 3000);
         invoiceForm.reset();
@@ -760,6 +795,7 @@ invoiceForm.addEventListener('submit', function(e) {
       }
     })
     .catch(err => {
-      showNotification('Ошибка при создании счета', 'error', 4000);
+      console.error('Ошибка создания счета:', err);
+      showNotification('Ошибка при создании счета: ' + err.message, 'error', 4000);
     });
 });
