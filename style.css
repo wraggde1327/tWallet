@@ -69,6 +69,7 @@
     font-size: 14px;
     padding: 0 10px;
     line-height: 42px;
+    text-align: center;
   }
 }
 
@@ -698,8 +699,8 @@ body {
   font-size: 14px;
 }
 
-#contractForm .input-contract-number,
-#contractForm .input-contract-date {
+#contractForm .contract-field-group input.input-contract-number,
+#contractForm .contract-field-group input.input-contract-date {
   width: 100%;
   height: 42px;
   min-height: 42px;
@@ -719,7 +720,7 @@ body {
   -webkit-appearance: none;
 }
 
-#contractForm input[type="date"].input-contract-date {
+#contractForm .contract-field-group input[type="date"].input-contract-date {
   display: block;
   text-align: left;
   line-height: 42px;
