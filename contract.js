@@ -46,22 +46,22 @@
     }
 
     const payload = {
-      contract_number: document.getElementById('contractNumber').value.trim(),
-      contract_date: document.getElementById('contractDate').value,
-      org_type: orgTypeInput.value,
+      contractNumber: document.getElementById('contractNumber').value.trim(),
+      contractDate: document.getElementById('contractDate').value,
+      orgType: orgTypeInput.value,
       zakazchik: document.getElementById('zakazchik').value.trim(),
       inn: document.getElementById('inn').value.trim(),
       ogrn: document.getElementById('ogrn').value.trim(),
       lico: document.getElementById('lico').value.trim(),
       osnovan: document.getElementById('osnovan').value.trim(),
-      ruководитель: document.getElementById('rucl').value.trim(),
+      rucl: document.getElementById('rucl').value.trim(),
       adress: document.getElementById('adress').value.trim(),
-      tel: document.getElementById('tel').value.trim(),
+      tel: document.getElementById('tel').value.trim() || null,
       pochta: document.getElementById('pochta').value.trim(),
       bank: document.getElementById('bank').value.trim(),
       bik: document.getElementById('bik').value.trim(),
       rs: document.getElementById('rs').value.trim(),
-      ks: document.getElementById('ks').value.trim(),
+      ks: document.getElementById('ks').value.trim() || null,
       tarif: tarifInput.value,
       who: typeof tgUserId !== 'undefined' ? tgUserId : null
     };
