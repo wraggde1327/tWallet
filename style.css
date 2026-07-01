@@ -1,51 +1,91 @@
-/* Мобильная адаптация (до 600px) */
-@media (max-width: 1000px) {
+/* Мобильная адаптация (до 700px) — объединённый блок */
+@media (max-width: 600px) {
   .container {
-    background: #dddddd !important;
+    max-width: 600px;
+    margin: 10px auto;
+    background: #dddddd;
+    border-radius: 16px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    padding: 10px 10px 10px 10px;
+    box-sizing: border-box;
   }
-  .payment-row {
-    display: flex;
-    flex-direction: column;
-    font-size: 12px !important;
- /*   background: #e0f7fa !important;*/
+
+  /* --- Платежи --- */
+    .payment-row {
+    display: grid;
+    grid-template-columns: 30px 1.2fr 0.8fr 0.8fr 0.8fr; !important;
+    gap: 4px;
+    padding: 0 5px;
+    font-size: 10px !important;
+    min-height: 16px;
   }
   .payment-row > div {
     font-size: 10px !important;
-    line-height: 1.2;
-    white-space: normal;
-    word-break: break-word;
-    overflow-wrap: anywhere;
-   /* background: #c8e6c9 !important;*/
+    line-height: 1.7;
+    padding-top: 0;
+    padding-bottom: 0;
   }
-  .dialog-edit-input {
-    width: 95vw;           /* почти вся ширина экрана */
-    max-width: 98vw;       /* не вылезает за экран */
-    min-width: 0;
-    font-size: 15px;
-    padding: 10px 14px;
-    margin: 12px auto 0 auto; /* сверху — 12px, по бокам и снизу — auto */
-    display: block;
-    border-radius: 8px;
-    border: 1.5px solid #ccc;
-    box-sizing: border-box;
+  .payment-row > div.status-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-right: 5px;
   }
-  #dialog {
-    min-width: 0;
-    width: 98vw;
-    max-width: 99vw;
-    box-sizing: border-box;
-    padding-left: 8px;
-    padding-right: 8px;
+  
+  .table-header {
+    font-size: 10px !important;
+    font-weight: 450 !important;
+    grid-template-columns: 30px 1.2fr 0.8fr 0.8fr 0.8fr; !important;
+    display: grid;
   }
-  /* Скрываем столбец 'Тип' и его данные */
-  .table-header > div:nth-child(3),
-  .payment-row > div:nth-child(3) {
-    display: none !important;
+   
+  
+  /* --- Договора --- */
+  #contractForm {
+    max-width: 90vw;
+    width: 90vw;
+    padding: 12px 8px 18px 8px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  #contractContent {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  #contractForm .contract-row {
+    display: grid;
+    grid-template-columns: min-content min-content min-content min-content;
+    gap: 2px;
+    margin-bottom: 0;
+    align-items: center;
+  }
+  #contractForm label.label-text {
+    font-size: 12px;
+    margin-bottom: 0;
+    min-width: 54px;
+    padding-right: 2px;
+  }
+  #contractForm .input-contract-number {
+    width: 32px;
+    min-width: 32px;
+    max-width: 40px;
+    font-size: 13px;
+    padding: 7px 6px;
+  }
+  #contractForm .input-contract-date {
+    width: 70px;
+    min-width: 70px;
+    max-width: 90px;
+    font-size: 13px;
+    padding: 7px 6px;
   }
 }
 
 
-
+/*/////////////////////////////////////////*/
+/* ОБЩИЕ СТИЛИ */
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
@@ -55,11 +95,11 @@ body {
 
 .container {
   max-width: 720px;
-  margin: 20px auto;
+  margin: 10px auto;
   background: #dddddd;
   border-radius: 16px;
   box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-  padding: 24px 32px;
+  padding: 15px 15px 15px 15px;
   box-sizing: border-box;
 }
 .header {
@@ -132,35 +172,39 @@ body {
   font-size: 13px;
   color: #666;
 }
-.table-header, .payment-row {
+.table-header {
   display: grid;
-  grid-template-columns: 40px 1.5fr 1fr 1fr 1fr 1fr;
-  gap: 12px;
-  padding: 12px 0;
+  grid-template-columns: 60px 1fr 0.7fr 0.8fr 0.6fr 0.8fr;
+  gap: 10px;
+  padding: 5px 5px;
   align-items: center;
   user-select: none;
-}
-.table-header {
   color: #7a7a7a;
   font-size: 13px;
   font-weight: 600;
   border-bottom: 2px solid #cfd8dc;
-  text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+/* --- Основной стиль для .payment-row (десктоп и общие) --- */
 .payment-row {
+  display: grid;
+  grid-template-columns: 60px 1fr 0.7fr 0.8fr 0.6fr 0.8fr;
+  gap: 10px;
+  padding: 5px 5px 5px 5px;
+  align-items: center;
+  user-select: none;
+  color: #7a7a7a;
+  font-size: 12px;
+  font-weight: 400;
+  border-bottom: 2px solid #cfd8dc;
   background: #fafafa;
   border-radius: 12px;
-  margin-bottom: 3px;
-  /*display: flex;*/
- /* align-items: center;*/
- /* gap: 16px;           /* Отступ между ячейками */
-  padding: 10px 5px;   /* Внутренние отступы слева и справа */
-  min-height: 30px;    /* Минимальная высота строки */
-  border-bottom: 1px solid #eee; /* Разделитель строк (по желанию) */
+  margin-bottom: 5px;
+  min-height: 20px;
+  border-bottom: 1px solid #eee;
   cursor: pointer;
   transition: background-color 0.25s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  line-height: 1.1;
 }
 .payment-row:hover {
   background-color: #e8f0fe;
@@ -179,7 +223,7 @@ body {
   color: #4a90e2;
   padding: 5px;
   display: flex;
-  border-radius: 15px;
+  border-radius: 10px;
 /*  display: inline-block;*/
   user-select: none;
   width: max-content;
@@ -365,51 +409,18 @@ body {
   align-items: center;
   justify-content: center;
 }
+/* --- Приветственное модальное окно --- */
 #user-input-overlay > div {
-  background: #181a20;
-  color: #fff;
-  padding: 32px 24px;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
-  text-align: center;
-  min-width: 260px;
-  max-width: 90vw;
+  background: #181a20 !important;
+  color: #fff !important;
 }
 #user-input-overlay input[type="text"] {
-  font-size: 16px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1.5px solid #444;
   background: #23242a;
   color: #fff;
-  width: 90%;
-  margin-bottom: 16px;
-  box-sizing: border-box;
-}
-#user-input-overlay button {
-  padding: 10px 24px;
-  border-radius: 10px;
-  border: none;
-  font-weight: 600;
-  font-size: 15px;
-  background: linear-gradient(90deg, #4a90e2 0%, #357abd 100%);
-  color: white;
-  cursor: pointer;
-  margin-top: 8px;
-  transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 8px rgba(74,144,226,0.10);
-}
-#user-input-overlay button:hover {
-  background: linear-gradient(90deg, #357abd 0%, #4a90e2 100%);
-}
-#user-input-overlay #userInputError {
-  color: #ff6b6b;
-  margin-top: 10px;
-  font-size: 14px;
-  display: none;
+  border: 1.5px solid #444;
 }
 
-/* --- Кнопки вкладок --- */
+/* --- Кнопки вкладок (меню) --- */
 .tabs {
   display: flex;
   gap: 0;
@@ -423,7 +434,7 @@ body {
   flex: 1 1 0;
   min-width: 70px;
   background: none;
-  color: #bfc9d1;
+  color: #444;
   border: none;
   outline: none;
   font-size: 15px;
@@ -434,7 +445,7 @@ body {
   border-bottom: 2.5px solid transparent;
   border-radius: 0;
   letter-spacing: 0.01em;
-  margin: 0 8px;
+  margin: 0 2px;
 }
 .tab-button.active {
   color: #4a90e2;
@@ -445,6 +456,62 @@ body {
 .tab-button:not(.active):hover {
   color: #4a90e2;
   background: none;
+}
+
+/* --- Кнопки выбора типа в счетах --- */
+.payment-type-group {
+  display: flex;
+  gap: 22px;
+  margin-bottom: 0;
+}
+.payment-type-btn {
+  flex: 1 1 0;
+  min-width: 80px;
+  background: #bfc9d1;
+  color: #fff;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 10px 0 9px 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  border-radius: 10px;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+.payment-type-btn.active.blue {
+  background: #4a90e2 !important;
+  color: #fff !important;
+}
+.payment-type-btn.active.green {
+  background: #3bb77e !important;
+  color: #fff !important;
+}
+.payment-type-btn.active.yellow {
+  background: #f7bb04 !important;
+  color: #fff !important;
+}
+
+/* --- Индикатор загрузки клиентов --- */
+#clientsLoadIndicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-left: 10px;
+  vertical-align: middle;
+  background: #bfc9d1;
+  box-shadow: 0 0 0 1px #bfc9d1;
+  transition: background 0.2s;
+}
+#clientsLoadIndicator.loading {
+  background: #f7bb04;
+  box-shadow: 0 0 0 1px #f7bb04;
+}
+#clientsLoadIndicator.loaded {
+  background: #3bb77e;
+  box-shadow: 0 0 0 1px #3bb77e;
 }
 
 /* --- Форма счета --- */
@@ -501,52 +568,11 @@ body {
   background: #eaf6ff;
   color: #4a90e2;
 }
-.payment-type-group {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 0;
-}
-.payment-type-btn {
-  flex: 1 1 0;
-  min-width: 80px;
-  background: #f3f3f3;
-  color: #888;
-  border: none;
-  outline: none;
-  font-size: 15px;
-  font-weight: 500;
-  padding: 10px 0 9px 0;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  border-radius: 10px;
-  letter-spacing: 0.01em;
-  margin: 0;
-}
-.payment-type-btn.active {
-  color: #fff;
-  font-weight: 700;
-}
-.payment-type-btn.blue.active {
-  background: #4a90e2;
-}
-.payment-type-btn.green {
-  background: #eafaf1;
-  color: #3bb77e;
-}
-.payment-type-btn.green.active {
-  background: #3bb77e;
-  color: #fff;
-}
-.payment-type-btn.yellow {
-  background: #fffbe6;
-  color: #f7bb04;
-}
-.payment-type-btn.yellow.active {
-  background: #f7bb04;
-  color: #fff;
-}
 .submit-btn {
-  width: 100%;
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
   padding: 12px 0;
   border-radius: 12px;
   border: none;
@@ -579,11 +605,15 @@ body {
   color: #666;
   font-weight: 500;
 }
-#clientsLoadIndicator {
-  margin-left: 10px;
-  font-size: 18px;
-  vertical-align: middle;
+.invoice-form label[for="clientSearchInput"] {
+  display: block;
+  margin-bottom: 14px;
 }
+.table-header > div:first-child,
+.payment-row > div:first-child {
+  padding-left: 10px;
+}
+
 /* --- Форма договора --- */
 #contractContent {
   padding-left: 18px;
@@ -721,17 +751,6 @@ body {
   background: linear-gradient(90deg, #357abd 0%, #4a90e2 100%);
 }
 
-#contractForm .input-error {
-  border-color: #e94b4b !important;
-}
-
-#contractForm label.label-text {
-  font-size: 14px;
-  color: #666;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
 /* Telegram WebApp: прокрутка длинной формы договора */
 body.telegram-webapp {
   overflow-x: hidden;
@@ -739,40 +758,22 @@ body.telegram-webapp {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Мобильная адаптация формы договора */
 @media (max-width: 600px) {
   body.telegram-webapp .container {
-    margin: 0 auto;
     max-width: 100%;
-    padding: 10px 10px 48px;
-    border-radius: 0;
-    box-shadow: none;
     box-sizing: border-box;
-  }
-
-  #contractContent {
-    padding-left: 0;
-    padding-right: 0;
   }
 
   #contractForm {
     max-width: 100%;
     width: 100%;
     padding: 16px 12px 24px;
-    margin: 0 auto;
     box-sizing: border-box;
   }
 
   #contractForm .contract-row {
-    display: flex;
     flex-wrap: wrap;
-    align-items: center;
     gap: 6px 8px;
-  }
-
-  #contractForm label.label-text {
-    font-size: 13px;
-    min-width: auto;
   }
 
   #contractForm .input-contract-number {
@@ -780,8 +781,6 @@ body.telegram-webapp {
     width: 72px;
     min-width: 60px;
     max-width: 100px;
-    font-size: 14px;
-    padding: 8px 8px;
   }
 
   #contractForm .input-contract-date {
@@ -789,14 +788,5 @@ body.telegram-webapp {
     width: auto;
     min-width: 120px;
     max-width: none;
-    font-size: 14px;
-    padding: 8px 8px;
-  }
-
-  #contractForm .submit-btn {
-    width: 100%;
-    position: sticky;
-    bottom: 8px;
-    z-index: 5;
   }
 }

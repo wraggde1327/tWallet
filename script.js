@@ -28,7 +28,7 @@ let tgUserId = null; // username
 let tgUserObj = null;
 
 // Список разрешённых пользователей
-const allowedUsers = ['nick_xnm', 'jekminaev', 'boss'];
+const allowedUsers = ['nick_xnm', 'jekminaev', 'boss', 'Artem_Kostenko_75'];
 
 const tg = window.Telegram?.WebApp;
 
@@ -278,13 +278,12 @@ function fetchPayments(retryCount = 0) {
       if (data && data.error) {
         throw new Error(`Ошибка сервера: ${data.error}`);
       }
-
       if (!Array.isArray(data)) {
         throw new Error("Некорректный формат данных: ожидался массив");
       }
 
       console.log("Структура первого элемента:", data.length > 0 ? data[0] : "Нет данных");
-      
+
       paymentsData = data;
       lastUpdated = new Date();
       filteredPayments = paymentsData;
@@ -299,7 +298,7 @@ function fetchPayments(retryCount = 0) {
         return;
       }
 
-      paymentsList.innerHTML = "<p style='color:red; padding:12px;'>Ошибка загрузки данных. Нажмите ⟳ для повтора.</p>";
+      paymentsList.innerHTML = "<p style='color:red; padding:12px;'>Ошибка загрузки данных</p>";
       totalSumEl.textContent = "Общая сумма: 0";
       updatedAtEl.textContent = "Обновлено: —";
       paymentsCountBadge.textContent = "0";
@@ -314,7 +313,7 @@ function filterPayments() {
     filteredPayments = paymentsData;
   } else {
     filteredPayments = paymentsData.filter(p =>
-      p["Название"].toLowerCase().startsWith(query)
+      p["Название"].toLowerCase().includes(query)
     );
   }
   renderPayments();
@@ -376,7 +375,7 @@ function renderPayments() {
       <div role="cell">${row["Тип"] ?? "—"}</div>
       <div role="cell">${formattedDate}</div>
       <div role="cell">${row["Сумма"] ?? "—"}</div>
-      <div role="cell" class="${statusClass}">${row["Статус"] ?? "—"}</div>
+      <div role="cell" class="status-cell ${statusClass}">${row["Статус"] ?? "—"}</div>
     `;
 
     div.addEventListener("click", () => openDialog(row));
@@ -571,6 +570,7 @@ function confirmPayment() {
               return sendPaymentData(formData, true, true);
             }
             
+            showNotification(`Ошибка сервера: ${response.status} ${response.statusText}. ${errorText}`, "error", 5000);
             throw new Error(`Ошибка сервера: ${response.status} ${response.statusText}. ${errorText}`);
           });
         }
@@ -578,15 +578,18 @@ function confirmPayment() {
       })
       .then(data => {
         console.log("Успешный ответ:", data);
-        showNotification(`Платёж "${paymentName}" на сумму ${amountToSend} успешно проведён.`, "info", 3000);
-
+        if (data && data.message) {
+          showNotification(data.message, "info", 3000);
+        } else if (data && data.error) {
+          showNotification(data.error, "error", 4000);
+        } else {
+          showNotification(`Платёж \"${paymentName}\" на сумму ${amountToSend} успешно проведён.`, "info", 3000);
+        }
         if (isEditing) {
           const idx = paymentsData.findIndex(p => p["№"] === invoiceId);
           if (idx !== -1) paymentsData[idx]["Сумма"] = amountToSend;
         }
-
         paymentsData = paymentsData.filter(p => p["№"] !== invoiceId);
-
         filterPayments();
       })
       .catch(error => {
@@ -680,38 +683,102 @@ const clientsLoadIndicator = document.getElementById('clientsLoadIndicator');
 let clientsList = [];
 let clientsLoaded = false;
 
-// Получение клиентов при переходе на вкладку 'Счета'
+function showModalLoading(text = 'Загрузка...') {
+  let modal = document.getElementById('modal-loading');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'modal-loading';
+    modal.style.position = 'fixed';
+    modal.style.top = 0;
+    modal.style.left = 0;
+    modal.style.width = '100vw';
+    modal.style.height = '100vh';
+    modal.style.background = 'rgba(10,10,20,0.88)';
+    modal.style.zIndex = 3000;
+    modal.style.display = 'flex';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+    modal.innerHTML = `<div style="background:#4a90e2;color:#fff;padding:32px 24px;border-radius:16px;font-size:18px;box-shadow:0 8px 32px rgba(0,0,0,0.45);text-align:center;">${text}</div>`;
+    document.body.appendChild(modal);
+  } else {
+    modal.style.display = 'flex';
+    modal.firstChild.textContent = text;
+    modal.firstChild.style.background = '#4a90e2';
+    modal.firstChild.style.color = '#fff';
+  }
+}
+function hideModalLoading() {
+  const modal = document.getElementById('modal-loading');
+  if (modal) modal.style.display = 'none';
+}
+
+// Индикатор загрузки клиентов
+function setClientsIndicator(state) {
+  clientsLoadIndicator.classList.remove('loading', 'loaded');
+  if (state === 'loading') {
+    clientsLoadIndicator.classList.add('loading');
+    clientsLoadIndicator.title = 'Загрузка клиентов...';
+  } else if (state === 'loaded') {
+    clientsLoadIndicator.classList.add('loaded');
+    clientsLoadIndicator.title = 'Клиенты загружены';
+  } else {
+    clientsLoadIndicator.title = 'Клиенты не загружены';
+  }
+}
+setClientsIndicator();
+
+// Получение клиентов при переходе на вкладку 'Счета' (только один раз)
 document.getElementById('invoiceTab').addEventListener('click', () => {
   if (!clientsLoaded) {
-    clientsLoadIndicator.textContent = '⏳';
+    showModalLoading('Загрузка клиентов...');
+    setClientsIndicator('loading');
     fetch(API_BASE + '/clients')
       .then(res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
       .then(data => {
-        if (data && data.error) {
-          throw new Error(data.error);
-        }
+        if (data && data.error) throw new Error(data.error);
         clientsList = Array.isArray(data) ? data : [];
         clientsLoaded = true;
-        clientsLoadIndicator.textContent = '✓';
+        setClientsIndicator('loaded');
+        hideModalLoading();
       })
       .catch(err => {
-        console.error('Ошибка загрузки клиентов:', err);
-        clientsLoadIndicator.textContent = '⚠️';
-        showNotification('Ошибка загрузки клиентов: ' + err.message, 'error', 4000);
+        setClientsIndicator();
+        hideModalLoading();
+        showNotification('Ошибка загрузки клиентов', 'error', 4000);
       });
   }
 });
 
-// Автозаполнение клиентов
+// --- показываем всех клиентов при фокусе ---
+clientSearchInput.addEventListener('focus', function() {
+  clientDropdown.innerHTML = '';
+  if (!clientsList.length) return;
+  clientsList.forEach(client => {
+    const div = document.createElement('div');
+    div.className = 'autocomplete-item';
+    div.textContent = client.name;
+    div.onclick = () => {
+      clientSearchInput.value = client.name;
+      clientDropdown.innerHTML = '';
+      clientSearchInput.dataset.clientId = client.id;
+    };
+    clientDropdown.appendChild(div);
+  });
+});
+
+// --- показываем всех подходящих клиентов при вводе ---
 clientSearchInput.addEventListener('input', function() {
   const query = this.value.trim().toLowerCase();
   clientDropdown.innerHTML = '';
-  if (!query || !clientsList.length) return;
-  const matches = clientsList.filter(c => c.name.toLowerCase().includes(query));
-  matches.slice(0, 8).forEach(client => {
+  if (!clientsList.length) return;
+  let matches = clientsList;
+  if (query) {
+    matches = clientsList.filter(c => c.name.toLowerCase().includes(query));
+  }
+  matches.forEach(client => {
     const div = document.createElement('div');
     div.className = 'autocomplete-item';
     div.textContent = client.name;
@@ -730,14 +797,24 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// Выбор типа платежа
+// Кнопки выбора типа: по умолчанию все серые, при активации — нужный цвет и белый текст
 paymentTypeBtns.forEach(btn => {
+  btn.classList.remove('active', 'blue', 'green', 'yellow');
   btn.addEventListener('click', function() {
-    paymentTypeBtns.forEach(b => b.classList.remove('active'));
+    paymentTypeBtns.forEach(b => b.classList.remove('active', 'blue', 'green', 'yellow'));
     this.classList.add('active');
+    if (this.dataset.type === 'Счет') this.classList.add('blue');
+    if (this.dataset.type === 'Наличные') this.classList.add('green');
+    if (this.dataset.type === 'Пополнить') this.classList.add('yellow');
     paymentTypeInput.value = this.dataset.type;
   });
 });
+// По умолчанию активируем первую кнопку (Счет)
+if (paymentTypeBtns.length) {
+  paymentTypeBtns.forEach(b => b.classList.remove('active', 'blue', 'green', 'yellow'));
+  paymentTypeBtns[0].classList.add('active', 'blue');
+  paymentTypeInput.value = paymentTypeBtns[0].dataset.type;
+}
 
 // Отправка формы счета
 invoiceForm.addEventListener('submit', function(e) {
@@ -748,19 +825,19 @@ invoiceForm.addEventListener('submit', function(e) {
   const sum = parseFloat(amountInput.value);
   const type = paymentTypeInput.value;
   if (!clientId) {
-    showNotification('Выберите клиента из списка!', 'error', 4000);
+    showNotification('Выберите клиента из списка!', 'error', 2000);
     return;
   }
   if (!sum || sum <= 0) {
-    showNotification('Введите корректную сумму!', 'error', 4000);
+    showNotification('Введите сумму', 'error', 2000);
     return;
   }
   if (!type) {
-    showNotification('Выберите тип!', 'error', 4000);
+    showNotification('Выберите тип!', 'error', 2000);
     return;
   }
   if (!tgUserId) {
-    showNotification('Пользователь не определён!', 'error', 4000);
+    showNotification('Пользователь не определён!', 'error', 2000);
     return;
   }
   const payload = {
@@ -769,33 +846,171 @@ invoiceForm.addEventListener('submit', function(e) {
     type: type,
     who: tgUserId
   };
-  showNotification('Создание счета...', 'status', 1500);
-  fetch(API_BASE + '/invoices', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-    .then(res => {
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return res.json();
+  showNotification('Счет отправляем...', 'status', 1800);
+  setTimeout(() => {
+    showModalLoading('Создание счета...');
+    fetch(API_BASE + '/invoices', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
     })
-    .then(data => {
-      if (data && data.error) {
-        throw new Error(data.error);
-      }
-      if (data && data.message) {
-        showNotification('Счет успешно создан!', 'info', 3000);
-        invoiceForm.reset();
-        clientSearchInput.dataset.clientId = '';
-        paymentTypeBtns.forEach(b => b.classList.remove('active'));
-        paymentTypeBtns[0].classList.add('active');
-        paymentTypeInput.value = paymentTypeBtns[0].dataset.type;
-      } else {
-        showNotification('Ошибка создания счета', 'error', 4000);
-      }
-    })
-    .catch(err => {
-      console.error('Ошибка создания счета:', err);
-      showNotification('Ошибка при создании счета: ' + err.message, 'error', 4000);
-    });
+      .then(res => res.json())
+      .then(data => {
+        hideModalLoading && hideModalLoading();
+        if (data && data.message) {
+          showNotification(data.message, 'info', 2000);
+          invoiceForm.reset();
+          clientSearchInput.dataset.clientId = '';
+          paymentTypeBtns.forEach(b => b.classList.remove('active', 'blue', 'green', 'yellow'));
+          paymentTypeBtns[0].classList.add('active', 'blue');
+          paymentTypeInput.value = paymentTypeBtns[0].dataset.type;
+        } else if (data && data.error) {
+          showNotification(data.error, 'error', 2000);
+        } else {
+          showNotification('Ошибка создания счета', 'error', 3000);
+        }
+      })
+      .catch(err => {
+        hideModalLoading && hideModalLoading();
+        showNotification('Ошибка при создании счета', 'error', 3000);
+      });
+  }, 600);
 });
+
+// --- Логика для вкладки 'Договора' ---
+const contractForm = document.getElementById('contractForm');
+const contractNumberInput = document.getElementById('contractNumber');
+const contractDateInput = document.getElementById('contractDate');
+const orgTypeInput = document.getElementById('orgType');
+const tarifInput = document.getElementById('tarif');
+const orgButtons = document.querySelectorAll('.button-org');
+const tarifButtons = document.querySelectorAll('.button-tarif');
+
+function getDefaultContractNumber() {
+  // Пример: 1507/24 (15 — день, 07 — месяц, 24 — год)
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear().toString().slice(-2);
+  return `${day}${month}/${year}`;
+}
+function getTodayDate() {
+  const now = new Date();
+  return now.toISOString().slice(0, 10);
+}
+
+// При открытии вкладки 'Договора' подставлять значения
+const contractTab = document.getElementById('contractTab');
+if (contractTab) {
+  contractTab.addEventListener('click', () => {
+    if (contractNumberInput) contractNumberInput.value = getDefaultContractNumber();
+    if (contractDateInput) contractDateInput.value = getTodayDate();
+    // Активировать первую кнопку типа организации и тарифа
+    if (orgButtons.length) {
+      orgButtons.forEach(b => b.classList.remove('active'));
+      orgButtons[0].classList.add('active');
+      if (orgTypeInput) orgTypeInput.value = orgButtons[0].dataset.value;
+    }
+    if (tarifButtons.length) {
+      tarifButtons.forEach(b => b.classList.remove('active'));
+      tarifButtons[0].classList.add('active');
+      if (tarifInput) tarifInput.value = tarifButtons[0].dataset.value;
+    }
+  });
+}
+// Переключение кнопок ИП/ООО
+if (orgButtons.length) {
+  orgButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      orgButtons.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      if (orgTypeInput) orgTypeInput.value = this.dataset.value;
+    });
+  });
+}
+// Переключение кнопок Стандарт/Промо
+if (tarifButtons.length) {
+  tarifButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      tarifButtons.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      if (tarifInput) tarifInput.value = this.dataset.value;
+    });
+  });
+}
+
+if (contractForm) {
+  contractForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    // Сбор данных
+    const payload = {
+      contractNumber: contractNumberInput.value.trim(),
+      contractDate: contractDateInput.value.trim(),
+      orgType: orgTypeInput.value.trim(),
+      zakazchik: document.getElementById('zakazchik').value.trim(),
+      inn: document.getElementById('inn').value.trim(),
+      ogrn: document.getElementById('ogrn').value.trim(),
+      lico: document.getElementById('lico').value.trim(),
+      osnovan: document.getElementById('osnovan').value.trim(),
+      rucl: document.getElementById('rucl').value.trim(),
+      adress: document.getElementById('adress').value.trim(),
+      tel: document.getElementById('tel').value.trim(),
+      pochta: document.getElementById('pochta').value.trim(),
+      bank: document.getElementById('bank').value.trim(),
+      bik: document.getElementById('bik').value.trim(),
+      rs: document.getElementById('rs').value.trim(),
+      ks: document.getElementById('ks').value.trim(),
+      tarif: tarifInput.value.trim(),
+      who: tgUserId
+    };
+    // Валидация обязательных полей
+    const required = [
+      'contractNumber','contractDate','orgType','zakazchik','inn','ogrn','lico','osnovan','rucl','adress','pochta','bank','bik','rs','tarif','who'
+    ];
+    for (const key of required) {
+      if (!payload[key]) {
+        hideModalLoading && hideModalLoading();
+        showNotification('Заполните все обязательные поля!', 'error', 2500);
+        return;
+      }
+    }
+    showNotification('Договор отправляем...', 'status', 1800);
+    setTimeout(() => {
+      showModalLoading('Создание договора...');
+      fetch(API_BASE + '/contracts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(res => res.json())
+        .then(data => {
+          hideModalLoading && hideModalLoading();
+          if (data && data.message) {
+            showNotification(data.message, 'info', 2000);
+            contractForm.reset();
+            // После сброса — снова подставить номер и дату, активировать кнопки
+            if (contractNumberInput) contractNumberInput.value = getDefaultContractNumber();
+            if (contractDateInput) contractDateInput.value = getTodayDate();
+            if (orgButtons.length) {
+              orgButtons.forEach(b => b.classList.remove('active'));
+              orgButtons[0].classList.add('active');
+              if (orgTypeInput) orgTypeInput.value = orgButtons[0].dataset.value;
+            }
+            if (tarifButtons.length) {
+              tarifButtons.forEach(b => b.classList.remove('active'));
+              tarifButtons[0].classList.add('active');
+              if (tarifInput) tarifInput.value = tarifButtons[0].dataset.value;
+            }
+          } else if (data && data.error) {
+            showNotification(data.error, 'error', 2000);
+          } else {
+            showNotification('Ошибка создания договора', 'error', 3000);
+          }
+        })
+        .catch(err => {
+          hideModalLoading && hideModalLoading();
+          showNotification('Ошибка при создании договора', 'error', 3000);
+        });
+    }, 600);
+  });
+}
