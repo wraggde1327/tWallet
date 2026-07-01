@@ -53,15 +53,22 @@
     padding-right: 0;
   }
   #contractForm .contract-header-fields {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
+    align-items: stretch;
+  }
+  #contractForm .contract-field-group {
+    min-width: 0;
   }
   #contractForm .input-contract-number,
   #contractForm .input-contract-date {
     width: 100%;
+    height: 42px;
+    min-height: 42px;
+    max-height: 42px;
     font-size: 14px;
-    padding: 10px 12px;
-    height: 40px;
+    padding: 0 10px;
+    line-height: 42px;
   }
 }
 
@@ -676,6 +683,7 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   margin-bottom: 4px;
+  align-items: stretch;
 }
 
 #contractForm .contract-field-group {
@@ -687,21 +695,34 @@ body {
 
 #contractForm .contract-field-group .form-label {
   margin-bottom: 0;
+  font-size: 14px;
 }
 
 #contractForm .input-contract-number,
 #contractForm .input-contract-date {
   width: 100%;
-  font-size: 15px;
-  padding: 10px 14px;
+  height: 42px;
+  min-height: 42px;
+  max-height: 42px;
+  font-size: 14px;
+  padding: 0 10px;
   border-radius: 10px;
   border: 1.5px solid #ccc;
   background: #fff;
   color: #222;
   box-sizing: border-box;
-  height: 40px;
   min-width: 0;
   max-width: none;
+  margin: 0;
+  line-height: normal;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+#contractForm input[type="date"].input-contract-date {
+  display: block;
+  text-align: left;
+  line-height: 42px;
 }
 #contractForm .button-group {
   display: flex;
