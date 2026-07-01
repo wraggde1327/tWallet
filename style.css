@@ -584,160 +584,219 @@ body {
   font-size: 18px;
   vertical-align: middle;
 }
-
 /* --- Форма договора --- */
-#contractContent h2 {
-  margin: 0 0 16px;
-  font-size: 22px;
-  font-weight: 600;
+#contractContent {
+  padding-left: 18px;
+  padding-right: 18px;
 }
-
+#contractContent h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  color: #222;
+  text-align: center;
+  padding-left: 8px;
+  padding-right: 8px;
+}
 #contractForm {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 7px;
+  padding: 30px 28px 40px 28px;
+  max-width: 480px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  padding-left: 28px;
+  padding-right: 28px;
 }
-
-.contract-row {
+#contractForm label.form-label {
+  margin-bottom: 0px;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+#contractForm input[type="text"],
+#contractForm input[type="number"],
+#contractForm input[type="email"],
+#contractForm input[type="tel"],
+#contractForm input[type="date"] {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #ccc;
+  font-size: 15px;
+  background: #fff;
+  color: #222;
+  box-sizing: border-box;
+  margin-bottom: 0;
+}
+#contractForm .contract-row {
   display: flex;
-  flex-wrap: wrap;
+  gap: 5px;
   align-items: center;
-  gap: 8px 12px;
-  margin-bottom: 4px;
+  margin-bottom: 0;
+}
+#contractForm .input-contract-number,
+#contractForm .input-contract-date {
+  font-size: 15px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #ccc;
+  background: #fff;
+  color: #222;
+  box-sizing: border-box;
+  height: 40px;
+  /* убираем индивидуальные min/max-width, если не нужны */
+  min-width: 0;
+  max-width: none;
+}
+#contractForm .input-contract-number {
+  width: 45px;
+  min-width: 45px;
+  max-width: 100px;
+}
+#contractForm .input-contract-date {
+  width: 90px;
+  min-width: 90px;
+  max-width: 150px;
+}
+#contractForm .button-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 0;
+}
+#contractForm .button-org, #contractForm .button-tarif {
+  flex: 1 1 0;
+  min-width: 80px;
+  background: #bfc9d1;
+  color: #fff;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 10px 0 9px 0;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  border-radius: 10px;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+#contractForm .button-org.active {
+  background: #4a90e2 !important;
+  color: #fff !important;
+}
+#contractForm .button-org:not(.active):hover {
+  background: #357abd;
+  color: #fff;
+}
+#contractForm .button-tarif.active {
+  background: #3bb77e !important;
+  color: #fff !important;
+}
+#contractForm .button-tarif:not(.active):hover {
+  background: #3bb77e;
+  color: #fff;
+}
+#contractForm .submit-btn {
+  width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  padding: 12px 0;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  font-size: 16px;
+  background: linear-gradient(90deg, #4a90e2 0%, #357abd 100%);
+  color: white;
+  cursor: pointer;
+  margin-top: 8px;
+  margin-bottom: 0;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(74,144,226,0.10);
+}
+#contractForm .submit-btn:hover {
+  background: linear-gradient(90deg, #357abd 0%, #4a90e2 100%);
 }
 
-.label-text,
-.date-label {
+#contractForm .input-error {
+  border-color: #e94b4b !important;
+}
+
+#contractForm label.label-text {
   font-size: 14px;
   color: #666;
   font-weight: 500;
   white-space: nowrap;
 }
 
-.form-label {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 14px;
-  color: #666;
-  font-weight: 500;
-}
-
-.form-control,
-.input-field {
-  width: 100%;
-  max-width: 100%;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1.5px solid #ccc;
-  font-size: 16px;
-  background: #fff;
-  color: #222;
-  box-sizing: border-box;
-}
-
-.input-contract-number {
-  flex: 1 1 100px;
-  min-width: 0;
-  width: auto;
-}
-
-.input-contract-date {
-  flex: 1 1 150px;
-  min-width: 0;
-  width: auto;
-}
-
-.button-group {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.button-org,
-.button-tarif {
-  flex: 1;
-  padding: 10px 0;
-  border: none;
-  border-radius: 10px;
-  background: #f3f3f3;
-  color: #888;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-
-.button-org.active,
-.button-tarif.active {
-  background: #4a90e2;
-  color: #fff;
-  font-weight: 700;
-}
-
-.input-error {
-  border-color: #e94b4b !important;
-}
-
-/* Telegram WebApp: прокрутка длинных форм */
+/* Telegram WebApp: прокрутка длинной формы договора */
 body.telegram-webapp {
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-body.telegram-webapp .container {
-  margin: 0 auto;
-  max-width: 100%;
-  min-height: auto;
-  border-radius: 0;
-  box-shadow: none;
-}
-
 /* Мобильная адаптация формы договора */
 @media (max-width: 600px) {
-  .container {
-    margin: 0;
-    padding: 12px 14px 48px;
-    border-radius: 0;
+  body.telegram-webapp .container {
+    margin: 0 auto;
     max-width: 100%;
+    padding: 10px 10px 48px;
+    border-radius: 0;
+    box-shadow: none;
     box-sizing: border-box;
   }
 
-  .tab-button {
-    font-size: 13px;
-    margin: 0 4px;
-    padding: 8px 0 6px;
+  #contractContent {
+    padding-left: 0;
+    padding-right: 0;
   }
 
-  #contractContent h2 {
-    font-size: 20px;
-  }
-
-  .contract-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 6px;
-  }
-
-  .contract-row .label-text,
-  .contract-row .date-label {
-    margin-bottom: 0;
-  }
-
-  .input-contract-number,
-  .input-contract-date {
+  #contractForm {
+    max-width: 100%;
     width: 100%;
+    padding: 16px 12px 24px;
+    margin: 0 auto;
+    box-sizing: border-box;
   }
 
-  .form-control,
-  .input-field {
-    font-size: 16px;
+  #contractForm .contract-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 8px;
+  }
+
+  #contractForm label.label-text {
+    font-size: 13px;
+    min-width: auto;
+  }
+
+  #contractForm .input-contract-number {
+    flex: 0 1 72px;
+    width: 72px;
+    min-width: 60px;
+    max-width: 100px;
+    font-size: 14px;
+    padding: 8px 8px;
+  }
+
+  #contractForm .input-contract-date {
+    flex: 1 1 130px;
+    width: auto;
+    min-width: 120px;
+    max-width: none;
+    font-size: 14px;
+    padding: 8px 8px;
   }
 
   #contractForm .submit-btn {
+    width: 100%;
     position: sticky;
     bottom: 8px;
     z-index: 5;
-    margin-top: 16px;
   }
 }
